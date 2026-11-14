@@ -1,0 +1,179 @@
+from datetime import datetime, timezone
+from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from ..core.database import get_db
+from ..core.deps import get_current_user
+from ..models.user import User
+from ..models.appointment import Appointment
+from ..schemas.appointment import AppointmentCreate, AppointmentResponse, ProviderInfo
+
+router = APIRouter(prefix="/appointments", tags=["Appointments (Demo / Configurable)"])
+
+# Configurable mock healthcare providers
+DEMO_PROVIDERS: list[ProviderInfo] = [
+    ProviderInfo(
+        id="prov-1",
+        name="Dr. Sarah Jenkins, DPT",
+        specialty="Musculoskeletal & Sports Physiotherapy",
+        clinic="MotionCare Physical Therapy Clinic",
+        rating=4.9,
+        experience_years=12,
+        available_days=["Monday", "Wednesday", "Friday"],
+        time_slots=["09:00", "11:00", "14:00", "16:00"],
+        is_demo=True
+    ),
+    ProviderInfo(
+        id="prov-2",
+        name="Dr. Marcus Vance, PT, OCS",
+        specialty="Orthopedic Spine & Posture Specialist",
+        clinic="Spine & Joint Rehabilitation Center",
+        rating=4.8,
+        experience_years=15,
+        available_days=["Tuesday", "Thursday", "Saturday"],
+        time_slots=["10:00", "12:00", "15:00", "17:00"],
+        is_demo=True
+    ),
+    ProviderInfo(
+        id="prov-3",
+        name="Dr. Emily Thorne, MD",
+        specialty="General Medicine & Primary Care",
+        clinic="City Health Integrative Medical Practice",
+        rating=4.9,
+        experience_years=9,
+        available_days=["Monday", "Tuesday", "Thursday", "Friday"],
+        time_slots=["09:30", "11:30", "14:30"],
+        is_demo=True
+    )
+]
+
+@router.get("/providers", response_model=list[ProviderInfo])
+def get_available_providers():
+    """Returns sample healthcare professionals for demonstration booking."""
+    return DEMO_PROVIDERS
+
+@router.get("", response_model=list[AppointmentResponse])
+def get_user_appointments(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Lists appointments belonging exclusively to the authenticated user."""
+    appointments = (
+        db.query(Appointment)
+        .filter(Appointment.user_id == current_user.id)
+        .order_by(Appointment.appointment_time.desc())
+        .all()
+    )
+    return [AppointmentResponse.model_validate(a) for a in appointments]
+
+@router.post("", response_model=AppointmentResponse, status_code=status.HTTP_201_CREATED)
+def book_appointment(
+    booking_in: AppointmentCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Creates an appointment booking request.
+    Includes conflict detection to prevent duplicate bookings at the same time slot for the provider.
+    """
+    # Check for slot conflicts
+    conflict = (
+        db.query(Appointment)
+        .filter(
+            Appointment.provider_name == booking_in.provider_name,
+            Appointment.appointment_time == booking_in.appointment_time,
+            Appointment.status != "cancelled"
+        )
+        .first()
+    )
+    if conflict:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="The requested provider already has an appointment booked at this exact time slot. Please choose another slot."
+        )
+
+    appointment = Appointment(
+        user_id=current_user.id,
+        provider_name=booking_in.provider_name,
+        provider_specialty=booking_in.provider_specialty,
+        clinic_name=booking_in.clinic_name,
+        appointment_time=booking_in.appointment_time,
+        status="confirmed",
+        consultation_type=booking_in.consultation_type,
+        reason=booking_in.reason,
+        notes=booking_in.notes,
+        is_demo=True
+    )
+    db.add(appointment)
+    db.commit()
+    db.refresh(appointment)
+    return AppointmentResponse.model_validate(appointment)
+
+@router.put("/{appointment_id}/cancel", response_model=AppointmentResponse)
+def cancel_appointment(
+    appointment_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Cancels a scheduled appointment. Enforces user ownership."""
+    appointment = (
+        db.query(Appointment)
+        .filter(Appointment.id == appointment_id, Appointment.user_id == current_user.id)
+        .first()
+    )
+    if not appointment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Appointment record not found or does not belong to you."
+        )
+    
+    appointment.status = "cancelled"
+    db.commit()
+    db.refresh(appointment)
+    return AppointmentResponse.model_validate(appointment)
+
+class RescheduleRequest(BaseModel):
+    new_time: datetime
+
+@router.put("/{appointment_id}/reschedule", response_model=AppointmentResponse)
+def reschedule_appointment(
+    appointment_id: int,
+    req: RescheduleRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Reschedules an appointment to a new date and time slot."""
+    appointment = (
+        db.query(Appointment)
+        .filter(Appointment.id == appointment_id, Appointment.user_id == current_user.id)
+        .first()
+    )
+    if not appointment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Appointment record not found."
+        )
+    
+    # Conflict check
+    conflict = (
+        db.query(Appointment)
+        .filter(
+            Appointment.provider_name == appointment.provider_name,
+            Appointment.appointment_time == req.new_time,
+            Appointment.status != "cancelled",
+            Appointment.id != appointment_id
+        )
+        .first()
+    )
+    if conflict:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Doctor already has a booking at this time slot. Please pick another slot."
+        )
+    
+    appointment.appointment_time = req.new_time
+    appointment.status = "confirmed"
+    db.commit()
+    db.refresh(appointment)
+    return AppointmentResponse.model_validate(appointment)
