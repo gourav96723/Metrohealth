@@ -200,8 +200,11 @@ def get_assessment_by_id(
     return _build_assessment_response(assessment)
 
 
+from sqlalchemy.orm.attributes import flag_modified
+
 class ExerciseProgressUpdate(BaseModel):
-    completed_ids: list[str]
+    completed_ids: Optional[list[str]] = None
+    completed_exercise_ids: Optional[list[str]] = None
 
 @router.put("/{assessment_id}/exercise-progress", response_model=AssessmentResponse)
 def update_exercise_progress(
@@ -223,7 +226,10 @@ def update_exercise_progress(
             detail="Access forbidden."
         )
     
-    assessment.completed_exercise_ids = req.completed_ids
+    # Support both completed_exercise_ids and completed_ids
+    chosen_ids = req.completed_exercise_ids if req.completed_exercise_ids is not None else (req.completed_ids or [])
+    assessment.completed_exercise_ids = list(chosen_ids)
+    flag_modified(assessment, "completed_exercise_ids")
     db.commit()
     db.refresh(assessment)
     return _build_assessment_response(assessment)

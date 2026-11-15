@@ -58,7 +58,42 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
   const completedExercises = latestAssessment?.completed_exercise_ids || [];
   const totalExercises = latestAssessment?.educational_exercises?.length || 0;
   const exercisesDoneCount = completedExercises.length;
-  const nextAppointment = appointments.find((a) => a.status === 'confirmed');
+  const completionPercentage = totalExercises > 0 ? Math.round((exercisesDoneCount / totalExercises) * 100) : 0;
+
+  // Appointment handling: separating truly upcoming vs past visits
+  const now = new Date();
+  const upcomingAppointments = appointments.filter(
+    (a) => a.status === 'confirmed' && new Date(a.appointment_time) > now
+  );
+  const nextAppointment = upcomingAppointments.length > 0 ? upcomingAppointments[0] : null;
+
+  const pastAppointments = appointments.filter(
+    (a) => a.status === 'completed' || new Date(a.appointment_time) <= now
+  );
+  const lastCompletedAppointment = pastAppointments.length > 0 ? pastAppointments[0] : null;
+
+  const handleToggleExerciseFromDashboard = async (e: React.MouseEvent, exerciseId: string) => {
+    e.stopPropagation();
+    if (!latestAssessment) return;
+
+    const currentCompleted = latestAssessment.completed_exercise_ids || [];
+    const newCompleted = currentCompleted.includes(exerciseId)
+      ? currentCompleted.filter((id) => id !== exerciseId)
+      : [...currentCompleted, exerciseId];
+
+    // Optimistically update local assessment state
+    const updatedAssessment = {
+      ...latestAssessment,
+      completed_exercise_ids: newCompleted,
+    };
+    setAssessments(assessments.map((a) => (a.id === latestAssessment.id ? updatedAssessment : a)));
+
+    try {
+      await api.updateExerciseProgress(latestAssessment.id, newCompleted);
+    } catch (err) {
+      console.error('Failed to sync exercise progress from dashboard:', err);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -319,16 +354,29 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                 return (
                   <div
                     key={ex.id}
-                    onClick={() => onNavigate('my-exercises')}
-                    className="p-3 rounded-2xl border border-slate-200/70 hover:bg-slate-50 transition cursor-pointer flex items-center justify-between"
+                    onClick={(e) => handleToggleExerciseFromDashboard(e, ex.id)}
+                    className={`p-3 rounded-2xl border transition cursor-pointer flex items-center justify-between ${
+                      isDone
+                        ? 'border-teal-200 bg-teal-50/40 hover:bg-teal-50/70'
+                        : 'border-slate-200/70 hover:bg-slate-50'
+                    }`}
                   >
                     <div>
-                      <p className="text-xs font-bold text-slate-800">{ex.name}</p>
+                      <p className={`text-xs font-bold ${isDone ? 'text-teal-900 line-through opacity-80' : 'text-slate-800'}`}>
+                        {ex.name}
+                      </p>
                       <p className="text-[10px] text-slate-500">{ex.suggested_dosage}</p>
                     </div>
-                    <CheckCircle2
-                      className={`w-4 h-4 ${isDone ? 'text-teal-600' : 'text-slate-300'}`}
-                    />
+                    <button
+                      type="button"
+                      onClick={(e) => handleToggleExerciseFromDashboard(e, ex.id)}
+                      className="p-1 hover:scale-110 transition"
+                      title={isDone ? 'Mark as incomplete' : 'Mark as complete'}
+                    >
+                      <CheckCircle2
+                        className={`w-5 h-5 transition ${isDone ? 'text-teal-600' : 'text-slate-300 hover:text-teal-500'}`}
+                      />
+                    </button>
                   </div>
                 );
               })}
@@ -340,13 +388,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
           )}
         </div>
 
-        {/* Card 2: Upcoming Doctor Consultation */}
+        {/* Card 2: Upcoming or Completed Doctor Consultation */}
         <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-teal-600" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
-                Upcoming Consultation
+                {nextAppointment ? 'Upcoming Consultation' : 'Doctor Consultation'}
               </h3>
             </div>
             <button
@@ -366,9 +414,32 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                 </span>
               </div>
               <p className="text-[11px] text-slate-600">{nextAppointment.provider_specialty}</p>
-              <div className="pt-2 border-t border-teal-200/60 text-[11px] text-teal-900 font-semibold flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-teal-600" />
-                <span>{new Date(nextAppointment.appointment_time).toLocaleString()}</span>
+              <div className="pt-2 border-t border-teal-200/60 text-[11px] text-teal-900 font-semibold flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-teal-600" />
+                  <span>{new Date(nextAppointment.appointment_time).toLocaleString()}</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-teal-200/60 text-teal-900 text-[9px] font-bold uppercase">
+                  Scheduled
+                </span>
+              </div>
+            </div>
+          ) : lastCompletedAppointment ? (
+            <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-bold text-slate-900">{lastCompletedAppointment.provider_name}</p>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                  Visit Done
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-600">{lastCompletedAppointment.provider_specialty}</p>
+              <div className="pt-2 border-t border-emerald-200/60 text-[11px] text-emerald-900 font-semibold flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{new Date(lastCompletedAppointment.appointment_time).toLocaleDateString()}</span>
+                </div>
+                <span className="text-[10px] text-emerald-700 font-bold">Consultation Done</span>
               </div>
             </div>
           ) : (

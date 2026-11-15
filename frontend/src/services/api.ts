@@ -136,7 +136,10 @@ export const api = {
     const res = await fetch(`${BASE_URL}/assessments/${id}/exercise-progress`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-      body: JSON.stringify({ completed_exercise_ids: completedExerciseIds }),
+      body: JSON.stringify({
+        completed_ids: completedExerciseIds,
+        completed_exercise_ids: completedExerciseIds,
+      }),
     });
     return handleResponse<AssessmentRecord>(res);
   },

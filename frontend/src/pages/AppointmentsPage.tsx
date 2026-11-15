@@ -378,59 +378,71 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
           </div>
 
           <div className="divide-y divide-slate-100">
-            {myAppointments.map((appt) => (
-              <div
-                key={appt.id}
-                className="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-900">{appt.provider_name}</span>
-                    <span className="text-slate-500">({appt.provider_specialty})</span>
-                    <span
-                      className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                        appt.status === 'confirmed'
-                          ? 'bg-teal-50 text-teal-800 border border-teal-200'
-                          : 'bg-slate-100 text-slate-600'
-                      }`}
-                    >
-                      {appt.status}
-                    </span>
+            {myAppointments.map((appt) => {
+              const isPastOrDone =
+                appt.status === 'completed' || new Date(appt.appointment_time) <= new Date();
+
+              return (
+                <div
+                  key={appt.id}
+                  className="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-slate-900">{appt.provider_name}</span>
+                      <span className="text-slate-500">({appt.provider_specialty})</span>
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1 ${
+                          isPastOrDone
+                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                            : appt.status === 'confirmed'
+                            ? 'bg-teal-50 text-teal-800 border border-teal-200'
+                            : 'bg-slate-100 text-slate-600'
+                        }`}
+                      >
+                        {isPastOrDone && <CheckCircle className="w-3 h-3 text-emerald-600" />}
+                        {isPastOrDone
+                          ? 'Visit Done'
+                          : appt.status === 'confirmed'
+                          ? 'Scheduled'
+                          : appt.status}
+                      </span>
+                    </div>
+                    <div className="text-slate-500 text-[11px] mt-1">
+                      {new Date(appt.appointment_time).toLocaleString()} • {appt.clinic_name} • Mode:{' '}
+                      {appt.consultation_type}
+                    </div>
+                    {appt.reason && (
+                      <p className="text-[11px] text-slate-600 mt-0.5">Reason: {appt.reason}</p>
+                    )}
                   </div>
-                  <div className="text-slate-500 text-[11px] mt-1">
-                    {new Date(appt.appointment_time).toLocaleString()} • {appt.clinic_name} • Mode:{' '}
-                    {appt.consultation_type}
-                  </div>
-                  {appt.reason && (
-                    <p className="text-[11px] text-slate-600 mt-0.5">Reason: {appt.reason}</p>
+
+                  {!isPastOrDone && appt.status === 'confirmed' && (
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => {
+                          setReschedulingAppt(appt);
+                          setRescheduleDate(appt.appointment_time.split('T')[0]);
+                          setRescheduleSlot('10:00');
+                          setRescheduleError(null);
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-100 font-semibold text-xs transition flex items-center gap-1"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        <span>Reschedule</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleCancel(appt.id)}
+                        className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   )}
                 </div>
-
-                {appt.status === 'confirmed' && (
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => {
-                        setReschedulingAppt(appt);
-                        setRescheduleDate(appt.appointment_time.split('T')[0]);
-                        setRescheduleSlot('10:00');
-                        setRescheduleError(null);
-                      }}
-                      className="px-3 py-1.5 rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-100 font-semibold text-xs transition flex items-center gap-1"
-                    >
-                      <RotateCcw className="w-3 h-3" />
-                      <span>Reschedule</span>
-                    </button>
-
-                    <button
-                      onClick={() => handleCancel(appt.id)}
-                      className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

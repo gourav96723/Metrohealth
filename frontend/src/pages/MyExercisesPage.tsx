@@ -62,7 +62,10 @@ export const MyExercisesPage: React.FC<MyExercisesPageProps> = ({ onNavigate }) 
     setUpdating(true);
 
     try {
-      await api.updateExerciseProgress(latestAssessment.id, newCompleted);
+      const res = await api.updateExerciseProgress(latestAssessment.id, newCompleted);
+      if (res && res.completed_exercise_ids) {
+        setCompletedIds(res.completed_exercise_ids);
+      }
     } catch (err) {
       console.error('Failed to sync exercise progress', err);
     } finally {

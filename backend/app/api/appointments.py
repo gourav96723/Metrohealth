@@ -58,13 +58,31 @@ def get_user_appointments(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Lists appointments belonging exclusively to the authenticated user."""
+    """
+    Lists appointments belonging exclusively to the authenticated user.
+    Automatically marks confirmed appointments whose scheduled time has passed as 'completed' (Visit Done).
+    """
     appointments = (
         db.query(Appointment)
         .filter(Appointment.user_id == current_user.id)
         .order_by(Appointment.appointment_time.desc())
         .all()
     )
+
+    now_utc = datetime.now(timezone.utc)
+    updated = False
+    for appt in appointments:
+        if appt.status == "confirmed":
+            appt_time = appt.appointment_time
+            if appt_time.tzinfo is None:
+                appt_time = appt_time.replace(tzinfo=timezone.utc)
+            if appt_time <= now_utc:
+                appt.status = "completed"
+                updated = True
+
+    if updated:
+        db.commit()
+
     return [AppointmentResponse.model_validate(a) for a in appointments]
 
 @router.post("", response_model=AppointmentResponse, status_code=status.HTTP_201_CREATED)
