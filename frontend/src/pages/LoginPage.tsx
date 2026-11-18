@@ -74,16 +74,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     }
   };
 
-  const handleAutofillDemo = () => {
-    if (role === 'patient') {
-      setIdentifier('demo@healthsense.ai');
-      setPassword('password123');
-    } else {
-      setIdentifier('dr.sarah@metrohealth.ai');
-      setPassword('password123');
-    }
-  };
-
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!forgotEmail) return;
@@ -248,54 +238,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             • Posture
           </span>
         </div>
-
-        {/* Top Floating Curve Indicator: Select Role */}
-        <div className="absolute top-[16%] left-[48%] hidden xl:block pointer-events-none z-10 bg-[#091524]/80 border border-cyan-500/20 rounded-xl px-4 py-2.5 backdrop-blur-md shadow-xl animate-hud-float">
-          <p className="text-[11px] font-semibold text-slate-300 mb-1">Select Role</p>
-          <div className="w-28 h-6 relative flex items-center justify-center">
-            <svg className="w-full h-full overflow-visible" viewBox="0 0 100 24">
-              <path
-                d="M 5 18 Q 30 2, 50 14 T 95 6"
-                fill="none"
-                stroke="#2dd4bf"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              />
-              <circle cx="50" cy="14" r="3" fill="#22d3ee" className="animate-ping" />
-              <circle cx="50" cy="14" r="2.5" fill="#38bdf8" />
-            </svg>
-          </div>
-          <div className="flex justify-between text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">
-            <span>Low</span>
-            <span>High</span>
-          </div>
-        </div>
-
-        {/* Top Right Mini HUD: Graphs % */}
-        <div className="absolute top-6 right-8 hidden xl:block pointer-events-none z-10 bg-[#091524]/75 border border-slate-700/60 rounded-xl px-3.5 py-2 backdrop-blur-md shadow-lg text-[10px] space-y-1.5 w-32">
-          <div className="flex justify-between items-center text-slate-400 font-bold">
-            <span>Graphs</span>
-            <span className="text-cyan-400">%</span>
-          </div>
-          <div>
-            <div className="flex justify-between text-[9px] text-slate-300 mb-0.5">
-              <span>Scoliosis</span>
-              <span className="text-emerald-400">98%</span>
-            </div>
-            <div className="w-full bg-slate-800 rounded-full h-1">
-              <div className="bg-emerald-400 h-1 rounded-full w-[98%]" />
-            </div>
-          </div>
-          <div>
-            <div className="flex justify-between text-[9px] text-slate-300 mb-0.5">
-              <span>Kyphosis</span>
-              <span className="text-cyan-400">94%</span>
-            </div>
-            <div className="w-full bg-slate-800 rounded-full h-1">
-              <div className="bg-cyan-400 h-1 rounded-full w-[94%]" />
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* ================= MAIN INTERACTIVE FOREGROUND LAYOUT ================= */}
@@ -449,18 +391,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
-
-              {/* Quick Demo Autofill Helper */}
-              <div className="pt-2 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/80">
-                <span className="text-[11px]">Quick Testing?</span>
-                <button
-                  type="button"
-                  onClick={handleAutofillDemo}
-                  className="text-[11px] font-bold text-teal-400 hover:text-teal-300 bg-slate-800/70 hover:bg-slate-800 px-3 py-1 rounded-lg border border-slate-700 transition"
-                >
-                  Autofill Demo
-                </button>
-              </div>
 
               {/* Bottom Support & Registration Links */}
               <div className="space-y-2 text-center text-xs text-slate-400 pt-1">
