@@ -29,9 +29,9 @@ def init_database():
             user = User(
                 email=demo_email,
                 hashed_password=hash_password("HealthSense2026!"),
-                full_name="Alex Morgan",
+                full_name="Aarav Sharma",
                 age=28,
-                gender="Non-Binary",
+                gender="Male",
                 is_active=True
             )
             db.add(user)
@@ -108,9 +108,9 @@ def init_database():
             # Seed sample demonstration appointment
             appointment = Appointment(
                 user_id=user.id,
-                provider_name="Dr. Sarah Jenkins, DPT",
-                provider_specialty="Musculoskeletal & Sports Physiotherapy",
-                clinic_name="MotionCare Physical Therapy Clinic",
+                provider_name="Dr. Rajesh Sharma, MS (Ortho)",
+                provider_specialty="Senior Orthopaedic & Sports Physiotherapy",
+                clinic_name="MetroHealth Super Speciality Hospital, New Delhi",
                 appointment_time=datetime.now(timezone.utc) + timedelta(days=3, hours=4),
                 status="confirmed",
                 consultation_type="telehealth",

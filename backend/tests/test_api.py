@@ -201,7 +201,7 @@ def test_appointment_booking_and_conflict():
 
     appt_time = "2026-11-20T10:00:00Z"
     payload = {
-        "provider_name": "Dr. Sarah Jenkins, DPT",
+        "provider_name": "Dr. Rajesh Sharma, MS (Ortho)",
         "provider_specialty": "Musculoskeletal & Sports Physiotherapy",
         "clinic_name": "MotionCare Physical Therapy Clinic",
         "appointment_time": appt_time,

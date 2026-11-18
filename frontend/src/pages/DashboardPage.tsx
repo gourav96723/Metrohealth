@@ -96,45 +96,44 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-slate-100">
       {/* 1. Welcome Section */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-slate-200/90">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-slate-800/80">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-[11px] font-bold">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <span className="px-2.5 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-[11px] font-bold">
               MetroHealth Patient Portal
             </span>
-            <span className="text-slate-400 text-xs">•</span>
-            <span className="text-xs text-slate-500 font-medium">
+            <span className="text-slate-500 text-xs">•</span>
+            <span className="text-xs text-slate-400 font-medium">
               Medical ID: MH-2026-{user?.id ? String(user.id).padStart(4, '0') : '8472'}
             </span>
-            <span className="text-slate-400 text-xs">•</span>
-            <span className="inline-flex items-center gap-1 text-xs font-bold text-teal-800 bg-teal-50 px-2 py-0.5 rounded-lg border border-teal-200">
-              <PhoneCall className="w-3 h-3 text-teal-600" />
+            <span className="text-slate-500 text-xs">•</span>
+            <span className="inline-flex items-center gap-1 text-xs font-bold text-teal-300 bg-[#0c1626] px-2.5 py-0.5 rounded-lg border border-teal-500/30">
+              <PhoneCall className="w-3 h-3 text-teal-400" />
               Helpline: +91 9653766889
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Welcome back, {user?.full_name || 'Patient'}!
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl leading-relaxed">
-            Your personal AI physiotherapy assistant is here to help you understand your posture,
-            monitor your progress, and improve your physical well-being.
+          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+            Your personal AI physiotherapy assistant is active. Monitor your posture alignment, track your 3-day recovery routine, and consult certified hospital specialists.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => onNavigate('records')}
-            className="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
+            className="px-4 py-2 rounded-xl border border-slate-700 bg-[#0c1626] hover:bg-slate-800 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 shadow-sm"
           >
-            <FileText className="w-3.5 h-3.5 text-slate-500" />
+            <FileText className="w-3.5 h-3.5 text-teal-400" />
             <span>My Records</span>
           </button>
 
           <button
             onClick={() => onNavigate('assessment')}
-            className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition flex items-center gap-2 shadow-md shadow-teal-600/20"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-400 hover:brightness-110 text-slate-950 text-xs font-bold transition flex items-center gap-2 shadow-md shadow-teal-500/20"
           >
             <Camera className="w-4 h-4" />
             <span>Start Assessment</span>
@@ -143,7 +142,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 flex items-center justify-between">
+        <div className="p-4 bg-rose-950/60 border border-rose-500/40 rounded-2xl text-xs text-rose-300 flex items-center justify-between">
           <span>{error}</span>
           <button onClick={loadDashboardData} className="font-bold underline ml-2">
             Retry
@@ -152,26 +151,25 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       )}
 
       {/* 2. Main Highlight: Start Posture Assessment Card */}
-      <div className="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl">
+      <div className="bg-gradient-to-r from-[#0c1626] via-[#0b1d30] to-[#0c1626] border border-cyan-500/30 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-2xl">
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           <div className="md:col-span-2 space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-xs font-semibold">
-              <Activity className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/40 text-cyan-300 text-xs font-semibold">
+              <Activity className="w-3.5 h-3.5 text-teal-400" />
               <span>AI Computer-Vision Biomechanical Scan</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
               Start New Posture & Movement Assessment
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl">
-              Perform a quick 30-second webcam posture analysis. Our AI evaluates shoulder tilt,
-              spinal symmetry, and joint range-of-motion to generate clinical observations and gentle
-              recovery exercises.
+              Perform a quick 30-second webcam posture analysis. Our AI calculates shoulder horizontal tilt,
+              cervical alignment, and bilateral symmetry to generate structured clinical observations and customized 3-day recovery exercises.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <button
                 onClick={() => onNavigate('assessment')}
-                className="px-6 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-extrabold text-xs transition flex items-center gap-2 shadow-lg shadow-teal-500/30 transform hover:-translate-y-0.5"
+                className="px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-500 via-cyan-400 to-teal-400 hover:brightness-110 text-slate-950 font-black text-xs transition flex items-center gap-2 shadow-lg shadow-teal-500/30 transform hover:-translate-y-0.5"
               >
                 <Camera className="w-4 h-4" />
                 <span>Begin Posture Assessment</span>
@@ -179,7 +177,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
               </button>
 
               {latestAssessment && (
-                <div className="text-[11px] text-teal-200/80 flex items-center gap-1.5">
+                <div className="text-[11px] text-teal-300 flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-teal-400" />
                   <span>
                     Last completed:{' '}
@@ -191,13 +189,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
           </div>
 
           {/* Quick Assessment Metric / Graphic */}
-          <div className="hidden md:flex flex-col items-center justify-center p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 text-center space-y-2">
-            <div className="w-16 h-16 rounded-2xl bg-teal-500/20 text-teal-300 flex items-center justify-center border border-teal-400/30">
+          <div className="hidden md:flex flex-col items-center justify-center p-6 bg-[#060e1a]/80 backdrop-blur-md rounded-2xl border border-slate-800 text-center space-y-2">
+            <div className="w-16 h-16 rounded-2xl bg-teal-500/20 text-cyan-300 flex items-center justify-center border border-teal-400/30 shadow-md">
               <Camera className="w-8 h-8" />
             </div>
             <p className="text-xs font-bold text-white">100% Client-Side Privacy</p>
-            <p className="text-[11px] text-slate-300">
-              Frames evaluated in browser via WebAssembly. No raw video stored.
+            <p className="text-[11px] text-slate-400">
+              Frames evaluated in browser via WebAssembly. Zero raw camera video stored.
             </p>
           </div>
         </div>
@@ -205,24 +203,24 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
 
       {/* 3. Previous Assessment / Active Exercise Record Card */}
       {latestAssessment ? (
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+        <div className="bg-[#0c1626]/85 rounded-3xl border border-slate-800/80 p-6 sm:p-8 backdrop-blur-xl shadow-xl space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-teal-500"></span>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   Active Clinical Record
                 </span>
-                <span className="text-xs text-slate-400">•</span>
-                <span className="text-xs font-semibold text-slate-600">
-                  {new Date(latestAssessment.created_at).toLocaleDateString(undefined, {
+                <span className="text-xs text-slate-600">•</span>
+                <span className="text-xs font-semibold text-slate-300">
+                  {new Date(latestAssessment.created_at).toLocaleDateString('en-IN', {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric',
                   })}
                 </span>
               </div>
-              <h3 className="text-lg font-bold text-slate-900">
+              <h3 className="text-lg font-bold text-white">
                 Latest Assessment: {latestAssessment.title}
               </h3>
             </div>
@@ -230,9 +228,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
             {/* View Exercise Plan Button */}
             <button
               onClick={() => onNavigate('my-exercises')}
-              className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition flex items-center gap-2 self-start sm:self-auto shadow-xs"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-400 hover:brightness-110 text-slate-950 font-bold text-xs transition flex items-center gap-2 self-start sm:self-auto shadow-md shadow-teal-500/20"
             >
-              <Dumbbell className="w-4 h-4 text-teal-400" />
+              <Dumbbell className="w-4 h-4 text-slate-950" />
               <span>View Exercise Plan</span>
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -240,59 +238,59 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
 
           {/* 4 Metric Tiles */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
-              <span className="text-[11px] font-semibold text-slate-500 block">Identified Problem</span>
-              <span className="text-sm font-bold text-slate-900 capitalize mt-1 block">
+            <div className="p-4 rounded-2xl bg-[#060e1a]/80 border border-slate-800">
+              <span className="text-[11px] font-semibold text-slate-400 block">Identified Problem</span>
+              <span className="text-sm font-bold text-white capitalize mt-1 block">
                 {latestAssessment.body_area?.replace('_', ' ') || 'General Strain'}
               </span>
-              <span className="text-[11px] text-slate-500 mt-0.5 block">
+              <span className="text-[11px] text-slate-400 mt-0.5 block">
                 Concern: {latestAssessment.primary_concern?.replace('_', ' ') || 'Routine Scan'}
               </span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
-              <span className="text-[11px] font-semibold text-slate-500 block">Safety Screening</span>
+            <div className="p-4 rounded-2xl bg-[#060e1a]/80 border border-slate-800">
+              <span className="text-[11px] font-semibold text-slate-400 block">Safety Screening</span>
               <span
                 className={`text-sm font-bold capitalize mt-1 block ${
                   latestAssessment.overall_risk_level === 'emergency'
-                    ? 'text-rose-600'
+                    ? 'text-rose-400'
                     : latestAssessment.overall_risk_level === 'urgent_physician'
-                    ? 'text-amber-600'
-                    : 'text-teal-700'
+                    ? 'text-amber-400'
+                    : 'text-emerald-400'
                 }`}
               >
                 {latestAssessment.overall_risk_level?.replace('_', ' ')}
               </span>
-              <span className="text-[11px] text-slate-500 mt-0.5 block">
+              <span className="text-[11px] text-slate-400 mt-0.5 block">
                 {latestAssessment.safety_screening?.is_safe_for_exercise
                   ? 'Safe for gentle movement'
                   : 'Physician visit advised'}
               </span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
-              <span className="text-[11px] font-semibold text-slate-500 block">Prescribed Exercises</span>
-              <span className="text-sm font-bold text-teal-700 mt-1 block">
+            <div className="p-4 rounded-2xl bg-[#060e1a]/80 border border-slate-800">
+              <span className="text-[11px] font-semibold text-slate-400 block">Prescribed Exercises</span>
+              <span className="text-sm font-bold text-cyan-400 mt-1 block">
                 {totalExercises} Therapeutic Movements
               </span>
-              <span className="text-[11px] text-slate-500 mt-0.5 block">
+              <span className="text-[11px] text-slate-400 mt-0.5 block">
                 3-Day Personalized Protocol
               </span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
-              <span className="text-[11px] font-semibold text-slate-500 block">Completion Status</span>
+            <div className="p-4 rounded-2xl bg-[#060e1a]/80 border border-slate-800">
+              <span className="text-[11px] font-semibold text-slate-400 block">Completion Status</span>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm font-bold text-slate-900">
+                <span className="text-sm font-bold text-white">
                   {exercisesDoneCount} of {totalExercises} Done
                 </span>
-                <span className="text-xs text-teal-600 font-bold">
+                <span className="text-xs text-teal-400 font-bold">
                   ({totalExercises > 0 ? Math.round((exercisesDoneCount / totalExercises) * 100) : 0}%)
                 </span>
               </div>
-              <div className="w-full bg-slate-200 rounded-full h-1.5 mt-2">
+              <div className="w-full bg-slate-800 rounded-full h-1.5 mt-2 overflow-hidden">
                 <div
-                  className="bg-teal-600 h-1.5 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-teal-500 via-cyan-400 to-teal-400 h-1.5 rounded-full transition-all duration-500"
                   style={{
                     width: `${totalExercises > 0 ? (exercisesDoneCount / totalExercises) * 100 : 0}%`,
                   }}
@@ -302,25 +300,25 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
           </div>
 
           {latestAssessment.summary && (
-            <p className="text-xs text-slate-600 leading-relaxed bg-teal-50/50 p-4 rounded-2xl border border-teal-200/60">
-              <strong>Clinical Finding:</strong> {latestAssessment.summary}
+            <p className="text-xs text-slate-300 leading-relaxed bg-[#060e1a]/90 p-4 rounded-2xl border border-cyan-500/30">
+              <strong className="text-cyan-400">Clinical Finding:</strong> {latestAssessment.summary}
             </p>
           )}
         </div>
       ) : (
         /* Empty State for New Patients */
-        <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border border-slate-200/90 shadow-xs max-w-lg mx-auto space-y-4">
-          <div className="w-16 h-16 rounded-3xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto shadow-sm">
+        <div className="bg-[#0c1626]/85 rounded-3xl p-8 sm:p-12 text-center border border-slate-800 shadow-xl max-w-lg mx-auto space-y-4">
+          <div className="w-16 h-16 rounded-3xl bg-teal-500/20 text-cyan-300 flex items-center justify-center mx-auto shadow-md">
             <Activity className="w-8 h-8" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900">Welcome to MetroHealth AI Clinic</h2>
-          <p className="text-xs text-slate-600 leading-relaxed">
+          <h2 className="text-lg font-bold text-white">Welcome to MetroHealth AI Clinic</h2>
+          <p className="text-xs text-slate-400 leading-relaxed">
             You don't have any past posture or physiotherapy assessments yet. Complete your first
             guided 3-minute assessment to unlock customized exercises and movement observations.
           </p>
           <button
             onClick={() => onNavigate('assessment')}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md shadow-teal-600/20 transition"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-500 to-cyan-400 hover:brightness-110 text-slate-950 rounded-xl text-xs font-bold shadow-md shadow-teal-500/20 transition"
           >
             <span>Start First Assessment</span>
             <ChevronRight className="w-4 h-4" />
@@ -331,17 +329,17 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       {/* 4. Additional Dashboard Features Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Card 1: Today's Exercise Tasks */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="bg-[#0c1626]/85 p-6 rounded-3xl border border-slate-800/80 backdrop-blur-xl shadow-xl space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
             <div className="flex items-center gap-2">
-              <Dumbbell className="w-4 h-4 text-teal-600" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+              <Dumbbell className="w-4 h-4 text-teal-400" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
                 Today's Exercises
               </h3>
             </div>
             <button
               onClick={() => onNavigate('my-exercises')}
-              className="text-[11px] font-bold text-teal-700 hover:underline"
+              className="text-[11px] font-bold text-cyan-400 hover:underline"
             >
               Open Plan
             </button>
@@ -357,15 +355,15 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                     onClick={(e) => handleToggleExerciseFromDashboard(e, ex.id)}
                     className={`p-3 rounded-2xl border transition cursor-pointer flex items-center justify-between ${
                       isDone
-                        ? 'border-teal-200 bg-teal-50/40 hover:bg-teal-50/70'
-                        : 'border-slate-200/70 hover:bg-slate-50'
+                        ? 'border-teal-500/40 bg-teal-950/40 text-teal-200'
+                        : 'border-slate-800 bg-[#060e1a]/80 hover:bg-[#081324] text-slate-200'
                     }`}
                   >
                     <div>
-                      <p className={`text-xs font-bold ${isDone ? 'text-teal-900 line-through opacity-80' : 'text-slate-800'}`}>
+                      <p className={`text-xs font-bold ${isDone ? 'text-teal-300 line-through opacity-80' : 'text-white'}`}>
                         {ex.name}
                       </p>
-                      <p className="text-[10px] text-slate-500">{ex.suggested_dosage}</p>
+                      <p className="text-[10px] text-slate-400">{ex.suggested_dosage}</p>
                     </div>
                     <button
                       type="button"
@@ -374,7 +372,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                       title={isDone ? 'Mark as incomplete' : 'Mark as complete'}
                     >
                       <CheckCircle2
-                        className={`w-5 h-5 transition ${isDone ? 'text-teal-600' : 'text-slate-300 hover:text-teal-500'}`}
+                        className={`w-5 h-5 transition ${isDone ? 'text-cyan-400' : 'text-slate-600 hover:text-cyan-400'}`}
                       />
                     </button>
                   </div>
@@ -382,95 +380,95 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
               })}
             </div>
           ) : (
-            <p className="text-xs text-slate-500 py-4 text-center">
+            <p className="text-xs text-slate-400 py-4 text-center">
               Complete an assessment to populate your daily physiotherapy exercises.
             </p>
           )}
         </div>
 
         {/* Card 2: Upcoming or Completed Doctor Consultation */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="bg-[#0c1626]/85 p-6 rounded-3xl border border-slate-800/80 backdrop-blur-xl shadow-xl space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-teal-600" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+              <Calendar className="w-4 h-4 text-teal-400" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
                 {nextAppointment ? 'Upcoming Consultation' : 'Doctor Consultation'}
               </h3>
             </div>
             <button
               onClick={() => onNavigate('appointments')}
-              className="text-[11px] font-bold text-teal-700 hover:underline"
+              className="text-[11px] font-bold text-cyan-400 hover:underline"
             >
               Book
             </button>
           </div>
 
           {nextAppointment ? (
-            <div className="p-4 rounded-2xl bg-teal-50/60 border border-teal-200/70 space-y-2">
+            <div className="p-4 rounded-2xl bg-[#060e1a]/90 border border-cyan-500/30 space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-slate-900">{nextAppointment.provider_name}</p>
-                <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-bold uppercase">
-                  {nextAppointment.consultation_type}
+                <p className="text-xs font-bold text-white">{nextAppointment.provider_name}</p>
+                <span className="px-2 py-0.5 rounded-full bg-teal-500/20 text-cyan-300 border border-teal-500/40 text-[10px] font-bold uppercase">
+                  {nextAppointment.consultation_type === 'telehealth' ? 'Telehealth' : 'In-Person'}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-600">{nextAppointment.provider_specialty}</p>
-              <div className="pt-2 border-t border-teal-200/60 text-[11px] text-teal-900 font-semibold flex items-center justify-between">
+              <p className="text-[11px] text-slate-400">{nextAppointment.provider_specialty}</p>
+              <div className="pt-2 border-t border-slate-800 text-[11px] text-cyan-300 font-semibold flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-teal-600" />
-                  <span>{new Date(nextAppointment.appointment_time).toLocaleString()}</span>
+                  <Clock className="w-3.5 h-3.5 text-teal-400" />
+                  <span>{new Date(nextAppointment.appointment_time).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST</span>
                 </div>
-                <span className="px-2 py-0.5 rounded-full bg-teal-200/60 text-teal-900 text-[9px] font-bold uppercase">
+                <span className="px-2 py-0.5 rounded-full bg-teal-500/20 text-cyan-300 text-[9px] font-bold uppercase">
                   Scheduled
                 </span>
               </div>
             </div>
           ) : lastCompletedAppointment ? (
-            <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-2">
+            <div className="p-4 rounded-2xl bg-[#060e1a]/90 border border-emerald-500/40 space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-slate-900">{lastCompletedAppointment.provider_name}</p>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                <p className="text-xs font-bold text-white">{lastCompletedAppointment.provider_name}</p>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-950/60 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold uppercase flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                   Visit Done
                 </span>
               </div>
-              <p className="text-[11px] text-slate-600">{lastCompletedAppointment.provider_specialty}</p>
-              <div className="pt-2 border-t border-emerald-200/60 text-[11px] text-emerald-900 font-semibold flex items-center justify-between">
+              <p className="text-[11px] text-slate-400">{lastCompletedAppointment.provider_specialty}</p>
+              <div className="pt-2 border-t border-slate-800 text-[11px] text-emerald-300 font-semibold flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>{new Date(lastCompletedAppointment.appointment_time).toLocaleDateString()}</span>
+                  <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{new Date(lastCompletedAppointment.appointment_time).toLocaleDateString('en-IN')}</span>
                 </div>
-                <span className="text-[10px] text-emerald-700 font-bold">Consultation Done</span>
+                <span className="text-[10px] text-emerald-400 font-bold">Consultation Done</span>
               </div>
             </div>
           ) : (
             <div className="py-4 text-center space-y-2">
-              <p className="text-xs text-slate-500">No active consultations booked.</p>
+              <p className="text-xs text-slate-400">No active consultations booked.</p>
               <button
                 onClick={() => onNavigate('consultants')}
-                className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
+                className="px-3.5 py-1.5 rounded-xl bg-[#060e1a] hover:bg-slate-800 text-cyan-300 border border-slate-700 text-xs font-semibold transition"
               >
-                Browse Specialists
+                Browse Indian Specialists
               </button>
             </div>
           )}
         </div>
 
         {/* Card 3: Weekly Alignment & Progress */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div className="bg-[#0c1626]/85 p-6 rounded-3xl border border-slate-800/80 backdrop-blur-xl shadow-xl space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-teal-600" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+              <TrendingUp className="w-4 h-4 text-teal-400" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
                 Weekly Postural Health
               </h3>
             </div>
-            <span className="text-[11px] text-teal-700 font-bold">Stable</span>
+            <span className="text-[11px] text-emerald-400 font-bold">Stable</span>
           </div>
 
           <div className="space-y-3">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-600">Shoulder Tilt Angle</span>
-              <span className="font-bold text-slate-900">
+              <span className="text-slate-400">Shoulder Tilt Angle</span>
+              <span className="font-bold text-white">
                 {latestAssessment?.movement_measurements?.[0]?.shoulder_alignment_deg
                   ? `${latestAssessment.movement_measurements[0].shoulder_alignment_deg}°`
                   : '0.8° (Optimal)'}
@@ -478,8 +476,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
             </div>
 
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-600">Bilateral Symmetry</span>
-              <span className="font-bold text-teal-700">
+              <span className="text-slate-400">Bilateral Symmetry</span>
+              <span className="font-bold text-teal-400">
                 {latestAssessment?.movement_measurements?.[0]?.symmetry_score
                   ? `${latestAssessment.movement_measurements[0].symmetry_score}%`
                   : '94%'}
@@ -487,17 +485,17 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
             </div>
 
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-600">Safety Status</span>
-              <span className="font-bold text-emerald-700 flex items-center gap-1">
+              <span className="text-slate-400">Safety Status</span>
+              <span className="font-bold text-emerald-400 flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Cleared</span>
               </span>
             </div>
 
-            <div className="pt-2 border-t border-slate-100">
+            <div className="pt-2 border-t border-slate-800">
               <button
                 onClick={() => onNavigate('records')}
-                className="w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl transition"
+                className="w-full py-2 bg-[#060e1a] hover:bg-slate-800 text-cyan-300 border border-slate-700 font-bold text-xs rounded-xl transition"
               >
                 View Historical Trends
               </button>

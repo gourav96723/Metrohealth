@@ -96,7 +96,7 @@ const MainApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+    <div className="min-h-screen flex flex-col bg-[#060e19] text-slate-100 selection:bg-teal-500 selection:text-white">
       {isPortalLayout ? (
         <div className="flex-1 flex min-h-screen">
           {/* Hospital Left Sidebar */}

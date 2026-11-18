@@ -98,23 +98,24 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
         clinic_name: selectedProvider.clinic,
         appointment_time: dateTimeStr,
         consultation_type: consultationType,
-        reason: reason || 'Posture and movement consultation',
-        notes: notes || undefined,
+        reason: reason.trim() || undefined,
+        notes: notes.trim() || undefined,
       });
 
-      setBookingSuccess(true);
       setMyAppointments([newAppt, ...myAppointments]);
+      setBookingSuccess(true);
+      setSelectedDate('');
+      setSelectedSlot('');
       setReason('');
-      setNotes('');
     } catch (err: any) {
-      setBookingError(err.message || 'Appointment booking failed.');
+      setBookingError(err.message || 'Booking failed. Slot may no longer be available.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancel = async (id: number) => {
-    if (!window.confirm('Are you sure you want to cancel this hospital appointment?')) return;
+    if (!confirm('Are you sure you want to cancel this consultation booking?')) return;
     try {
       const updated = await api.cancelAppointment(id);
       setMyAppointments(myAppointments.map((a) => (a.id === id ? updated : a)));
@@ -153,29 +154,29 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-slate-100">
       {/* Header Banner */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs">
+      <div className="bg-[#0c1626]/85 rounded-3xl border border-slate-800/80 p-6 sm:p-8 backdrop-blur-xl shadow-xl">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-semibold mb-2">
-              <Stethoscope className="w-3.5 h-3.5" />
-              <span>MetroHealth Clinical Scheduling</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-xs font-semibold mb-2">
+              <Stethoscope className="w-3.5 h-3.5 text-teal-400" />
+              <span>MetroHealth Clinical Scheduling (India)</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
+            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
               Schedule Physiotherapy & Posture Consultation
             </h1>
-            <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
-              Connect with certified physiotherapy specialists and orthopedic consultants. Your AI assessment
-              history, posture measurements, and exercise progress are pre-synced to your consultation.
+            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+              Connect with board-certified Indian physiotherapy and spine specialists. Your AI posture measurements,
+              joint symmetry angles, and exercise progress are pre-synced to your clinical booking.
             </p>
           </div>
 
           <button
             onClick={() => onNavigate('consultants')}
-            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition flex items-center gap-1.5"
+            className="px-4 py-2 bg-[#060e1a] hover:bg-slate-800 text-cyan-300 border border-slate-700 hover:border-cyan-500/40 rounded-xl text-xs font-bold transition flex items-center gap-1.5"
           >
-            <User className="w-3.5 h-3.5" />
+            <User className="w-3.5 h-3.5 text-teal-400" />
             <span>View Doctor Profiles</span>
           </button>
         </div>
@@ -186,10 +187,10 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
         {/* Left: Providers List */}
         <div className="lg:col-span-1 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               Select Specialist
             </h3>
-            <span className="text-[11px] text-teal-700 font-semibold">
+            <span className="text-[11px] text-cyan-400 font-semibold">
               {providers.length} Available
             </span>
           </div>
@@ -203,30 +204,30 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
                   setBookingSuccess(false);
                   setBookingError(null);
                 }}
-                className={`p-4 rounded-2xl border transition cursor-pointer ${
+                className={`p-4 rounded-2xl border transition cursor-pointer backdrop-blur-md ${
                   selectedProvider?.id === prov.id
-                    ? 'border-teal-500 bg-teal-50/70 shadow-xs ring-2 ring-teal-500/20'
-                    : 'border-slate-200/90 bg-white hover:bg-slate-50'
+                    ? 'border-cyan-400 bg-teal-500/15 shadow-md shadow-cyan-950/40 ring-1 ring-cyan-400/40'
+                    : 'border-slate-800/80 bg-[#0c1626]/80 hover:bg-[#0e1b30] hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900">{prov.name}</h4>
-                    <span className="text-xs text-teal-700 font-semibold block">{prov.specialty}</span>
+                    <h4 className="font-bold text-sm text-white">{prov.name}</h4>
+                    <span className="text-xs text-teal-400 font-semibold block">{prov.specialty}</span>
                   </div>
-                  <div className="flex items-center gap-1 text-xs font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
-                    <Star className="w-3 h-3 fill-amber-400" />
+                  <div className="flex items-center gap-1 text-xs font-bold text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/30">
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                     <span>{prov.rating}</span>
                   </div>
                 </div>
 
-                <div className="mt-3 pt-2 border-t border-slate-100 space-y-1 text-[11px] text-slate-500">
+                <div className="mt-3 pt-2 border-t border-slate-800 space-y-1 text-[11px] text-slate-400">
                   <div className="flex items-center gap-1.5">
-                    <Building className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{prov.clinic}</span>
+                    <Building className="w-3.5 h-3.5 text-slate-500" />
+                    <span className="truncate">{prov.clinic}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                    <Calendar className="w-3.5 h-3.5 text-slate-500" />
                     <span>Days: {prov.available_days.join(', ')}</span>
                   </div>
                 </div>
@@ -238,16 +239,16 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
         {/* Right: Booking Form & Slots */}
         <div className="lg:col-span-2">
           {selectedProvider ? (
-            <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6">
-              <div className="border-b border-slate-100 pb-4">
-                <span className="text-xs text-teal-700 font-semibold block">Schedule Consultation with</span>
-                <h3 className="text-lg font-bold text-slate-900">{selectedProvider.name}</h3>
-                <p className="text-xs text-slate-500">{selectedProvider.clinic}</p>
+            <div className="bg-[#0c1626]/85 rounded-3xl border border-slate-800/80 p-6 sm:p-8 backdrop-blur-xl shadow-xl space-y-6">
+              <div className="border-b border-slate-800 pb-4">
+                <span className="text-xs text-teal-400 font-semibold block">Schedule Consultation with</span>
+                <h3 className="text-lg font-bold text-white">{selectedProvider.name}</h3>
+                <p className="text-xs text-slate-400">{selectedProvider.clinic}</p>
               </div>
 
               {bookingSuccess && (
-                <div className="p-4 bg-teal-50 border border-teal-200 rounded-2xl text-xs text-teal-800 flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                <div className="p-4 bg-teal-950/60 border border-teal-500/40 rounded-2xl text-xs text-teal-200 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-teal-400 flex-shrink-0" />
                   <span>
                     Appointment successfully scheduled! A confirmation has been registered to your portal records.
                   </span>
@@ -255,7 +256,7 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
               )}
 
               {bookingError && (
-                <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 flex items-center gap-2">
+                <div className="p-4 bg-rose-950/60 border border-rose-500/40 rounded-2xl text-xs text-rose-300 flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <span>{bookingError}</span>
                 </div>
@@ -264,7 +265,7 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
               <form onSubmit={handleBook} className="space-y-4">
                 {/* Consultation Mode */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                     Consultation Mode
                   </label>
                   <div className="grid grid-cols-2 gap-3">
@@ -273,12 +274,12 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
                       onClick={() => setConsultationType('telehealth')}
                       className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition ${
                         consultationType === 'telehealth'
-                          ? 'border-teal-500 bg-teal-50 text-teal-800 ring-2 ring-teal-500/20'
-                          : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                          ? 'border-cyan-400 bg-teal-500/20 text-cyan-300 ring-1 ring-cyan-400/40'
+                          : 'border-slate-700 bg-[#060e1a] text-slate-400 hover:text-white'
                       }`}
                     >
-                      <Video className="w-4 h-4 text-teal-600" />
-                      <span>Telehealth Video Call</span>
+                      <Video className="w-4 h-4 text-teal-400" />
+                      <span>Telehealth Video Call (₹999)</span>
                     </button>
 
                     <button
@@ -286,12 +287,12 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
                       onClick={() => setConsultationType('in_person')}
                       className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition ${
                         consultationType === 'in_person'
-                          ? 'border-teal-500 bg-teal-50 text-teal-800 ring-2 ring-teal-500/20'
-                          : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                          ? 'border-cyan-400 bg-teal-500/20 text-cyan-300 ring-1 ring-cyan-400/40'
+                          : 'border-slate-700 bg-[#060e1a] text-slate-400 hover:text-white'
                       }`}
                     >
-                      <Building className="w-4 h-4 text-cyan-600" />
-                      <span>In-Person Hospital Clinic</span>
+                      <Building className="w-4 h-4 text-cyan-400" />
+                      <span>In-Person Hospital Visit</span>
                     </button>
                   </div>
                 </div>
@@ -299,7 +300,7 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
                 {/* Date Selection */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
                       Select Date
                     </label>
                     <input
@@ -308,13 +309,13 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
                       min={new Date().toISOString().split('T')[0]}
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
-                      className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
+                      className="w-full px-3 py-2 text-xs bg-[#060e1a] border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-400 outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Available Time Slot
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                      Available Time Slot (IST)
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {selectedProvider.time_slots.map((slot) => (
@@ -324,8 +325,8 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
                           onClick={() => setSelectedSlot(slot)}
                           className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition ${
                             selectedSlot === slot
-                              ? 'border-teal-600 bg-teal-600 text-white'
-                              : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                              ? 'border-cyan-400 bg-gradient-to-r from-teal-500 to-cyan-400 text-slate-950 font-bold'
+                              : 'border-slate-700 bg-[#060e1a] text-slate-300 hover:border-slate-600'
                           }`}
                         >
                           {slot}
@@ -337,22 +338,22 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
 
                 {/* Reason & Notes */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
                     Reason for Consultation (Optional)
                   </label>
                   <input
                     type="text"
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    placeholder="e.g. Neck stiffness and follow-up on 3-day exercise plan"
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
+                    placeholder="e.g. Neck stiffness, thoracic posture, or exercise follow-up"
+                    className="w-full px-3 py-2 text-xs bg-[#060e1a] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-400 outline-none"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading || !selectedDate || !selectedSlot}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md shadow-teal-600/20 transition disabled:bg-slate-300"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-teal-500 via-cyan-400 to-teal-400 text-slate-950 font-bold text-xs shadow-md shadow-teal-500/25 transition disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 active:scale-[0.98]"
                 >
                   <Calendar className="w-4 h-4" />
                   <span>{loading ? 'Confirming Appointment...' : 'Confirm Hospital Appointment'}</span>
@@ -360,7 +361,7 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
               </form>
             </div>
           ) : (
-            <div className="bg-white rounded-3xl border border-slate-200/90 p-12 text-center text-xs text-slate-400">
+            <div className="bg-[#0c1626]/85 rounded-3xl border border-slate-800/80 p-12 text-center text-xs text-slate-400">
               <span>Select a healthcare specialist on the left to schedule an appointment.</span>
             </div>
           )}
@@ -369,15 +370,15 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
 
       {/* User's Existing Appointments with Reschedule */}
       {user && myAppointments.length > 0 && (
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 className="font-bold text-sm text-slate-900 uppercase tracking-wider">
+        <div className="bg-[#0c1626]/85 rounded-3xl border border-slate-800/80 p-6 sm:p-8 backdrop-blur-xl shadow-xl space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <h3 className="font-bold text-sm text-white uppercase tracking-wider">
               Your Scheduled Consultations
             </h3>
-            <span className="text-xs text-slate-500">{myAppointments.length} Active Records</span>
+            <span className="text-xs text-slate-400">{myAppointments.length} Active Records</span>
           </div>
 
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-slate-800/80">
             {myAppointments.map((appt) => {
               const isPastOrDone =
                 appt.status === 'completed' || new Date(appt.appointment_time) <= new Date();
@@ -389,18 +390,18 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
                 >
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-900">{appt.provider_name}</span>
-                      <span className="text-slate-500">({appt.provider_specialty})</span>
+                      <span className="font-bold text-white">{appt.provider_name}</span>
+                      <span className="text-slate-400">({appt.provider_specialty})</span>
                       <span
                         className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1 ${
                           isPastOrDone
-                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                            ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-500/40'
                             : appt.status === 'confirmed'
-                            ? 'bg-teal-50 text-teal-800 border border-teal-200'
-                            : 'bg-slate-100 text-slate-600'
+                            ? 'bg-teal-950/60 text-teal-300 border border-teal-500/40'
+                            : 'bg-slate-800 text-slate-400'
                         }`}
                       >
-                        {isPastOrDone && <CheckCircle className="w-3 h-3 text-emerald-600" />}
+                        {isPastOrDone && <CheckCircle className="w-3 h-3 text-emerald-400" />}
                         {isPastOrDone
                           ? 'Visit Done'
                           : appt.status === 'confirmed'
@@ -408,12 +409,12 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
                           : appt.status}
                       </span>
                     </div>
-                    <div className="text-slate-500 text-[11px] mt-1">
-                      {new Date(appt.appointment_time).toLocaleString()} • {appt.clinic_name} • Mode:{' '}
-                      {appt.consultation_type}
+                    <div className="text-slate-400 text-[11px] mt-1">
+                      {new Date(appt.appointment_time).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST • {appt.clinic_name} • Mode:{' '}
+                      {appt.consultation_type === 'telehealth' ? 'Telehealth Video' : 'In-Person Hospital'}
                     </div>
                     {appt.reason && (
-                      <p className="text-[11px] text-slate-600 mt-0.5">Reason: {appt.reason}</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Reason: {appt.reason}</p>
                     )}
                   </div>
 
@@ -426,7 +427,7 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
                           setRescheduleSlot('10:00');
                           setRescheduleError(null);
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-100 font-semibold text-xs transition flex items-center gap-1"
+                        className="px-3 py-1.5 rounded-lg bg-teal-500/10 text-teal-300 hover:bg-teal-500/20 font-semibold text-xs border border-teal-500/30 transition flex items-center gap-1"
                       >
                         <RotateCcw className="w-3 h-3" />
                         <span>Reschedule</span>
@@ -434,7 +435,7 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
 
                       <button
                         onClick={() => handleCancel(appt.id)}
-                        className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline"
+                        className="text-xs font-semibold text-rose-400 hover:text-rose-300 hover:underline"
                       >
                         Cancel
                       </button>
@@ -449,24 +450,24 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
 
       {/* Reschedule Modal */}
       {reschedulingAppt && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white max-w-md w-full p-6 rounded-3xl border border-slate-200 shadow-2xl relative space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#0c1626] max-w-md w-full p-6 rounded-3xl border border-cyan-500/30 shadow-2xl relative space-y-4 text-white">
             <button
               onClick={() => setReschedulingAppt(null)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
             >
               <X className="w-4 h-4" />
             </button>
 
             <div>
-              <h3 className="text-base font-bold text-slate-900">Reschedule Consultation</h3>
-              <p className="text-xs text-slate-500">
+              <h3 className="text-base font-bold text-white">Reschedule Consultation</h3>
+              <p className="text-xs text-slate-400">
                 Updating appointment with {reschedulingAppt.provider_name}
               </p>
             </div>
 
             {rescheduleError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-center gap-2">
+              <div className="p-3 bg-rose-950/60 border border-rose-500/40 rounded-xl text-xs text-rose-300 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 <span>{rescheduleError}</span>
               </div>
@@ -474,7 +475,7 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
 
             <form onSubmit={handleRescheduleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
                   Choose New Date
                 </label>
                 <input
@@ -483,24 +484,24 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
                   min={new Date().toISOString().split('T')[0]}
                   value={rescheduleDate}
                   onChange={(e) => setRescheduleDate(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none"
+                  className="w-full px-3 py-2 text-xs bg-[#060e1a] border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-cyan-400 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Select New Time Slot
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Select New Time Slot (IST)
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'].map((slot) => (
+                  {['09:30', '11:00', '12:30', '14:30', '16:00', '17:30'].map((slot) => (
                     <button
                       key={slot}
                       type="button"
                       onClick={() => setRescheduleSlot(slot)}
                       className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition ${
                         rescheduleSlot === slot
-                          ? 'border-teal-600 bg-teal-600 text-white'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                          ? 'border-cyan-400 bg-gradient-to-r from-teal-500 to-cyan-400 text-slate-950 font-bold'
+                          : 'border-slate-700 bg-[#060e1a] text-slate-300 hover:border-slate-600'
                       }`}
                     >
                       {slot}
@@ -513,14 +514,14 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
                 <button
                   type="button"
                   onClick={() => setReschedulingAppt(null)}
-                  className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                  className="px-4 py-2 border border-slate-700 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800"
                 >
                   Keep Existing
                 </button>
                 <button
                   type="submit"
                   disabled={rescheduleLoading || !rescheduleDate || !rescheduleSlot}
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition disabled:bg-slate-300"
+                  className="px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-400 text-slate-950 font-bold rounded-xl text-xs transition disabled:opacity-50"
                 >
                   {rescheduleLoading ? 'Updating...' : 'Confirm Reschedule'}
                 </button>

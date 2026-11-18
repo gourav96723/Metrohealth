@@ -36,29 +36,29 @@ export const ExercisesPage: React.FC<ExercisesPageProps> = ({ onNavigate }) => {
   });
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-slate-100">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div className="flex items-center gap-3">
           <button
             onClick={() => onNavigate('dashboard')}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
+            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
               Physiotherapy Educational Exercises
             </h1>
-            <p className="text-xs text-slate-500">
-              Evidence-based mobility and postural stability routines categorized by body region.
+            <p className="text-xs text-slate-400">
+              Evidence-based mobility and postural stability routines categorized by anatomical body region.
             </p>
           </div>
         </div>
 
         <button
           onClick={() => onNavigate('assessment')}
-          className="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs shadow transition"
+          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-400 hover:brightness-110 text-slate-950 font-bold text-xs shadow-md shadow-teal-500/20 transition"
         >
           Check My Posture
         </button>
@@ -67,13 +67,13 @@ export const ExercisesPage: React.FC<ExercisesPageProps> = ({ onNavigate }) => {
       {/* Search & Region Filter */}
       <div className="space-y-4">
         <div className="relative max-w-md">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search exercises by name or purpose (e.g. Chin Tuck, Glute Bridge)..."
-            className="w-full pl-10 pr-4 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none transition bg-white"
+            placeholder="Search exercises by name or purpose..."
+            className="w-full pl-10 pr-4 py-2.5 text-xs border border-slate-700 rounded-xl focus:ring-2 focus:ring-cyan-400 outline-none transition bg-[#060e1a] text-white placeholder-slate-500"
           />
         </div>
 
@@ -82,10 +82,10 @@ export const ExercisesPage: React.FC<ExercisesPageProps> = ({ onNavigate }) => {
             <button
               key={area}
               onClick={() => setSelectedArea(area)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize whitespace-nowrap transition ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold capitalize whitespace-nowrap transition ${
                 selectedArea === area
-                  ? 'bg-brand-600 text-white shadow-sm'
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  ? 'bg-gradient-to-r from-teal-500 to-cyan-400 text-slate-950 font-bold shadow-md shadow-teal-500/20'
+                  : 'bg-[#0c1626] border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
               {area.replace('_', ' ')}
@@ -97,11 +97,11 @@ export const ExercisesPage: React.FC<ExercisesPageProps> = ({ onNavigate }) => {
       {/* Exercises Grid */}
       {loading ? (
         <div className="py-20 text-center text-xs text-slate-400">
-          <Activity className="w-6 h-6 text-brand-600 animate-spin mx-auto mb-2" />
+          <Activity className="w-6 h-6 text-teal-400 animate-spin mx-auto mb-2" />
           <span>Loading exercise library...</span>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-16 text-center text-xs text-slate-500">
+        <div className="py-16 text-center text-xs text-slate-400 bg-[#0c1626]/60 rounded-3xl border border-slate-800">
           No exercises matched your search query. Try another keyword or clear the filter.
         </div>
       ) : (
