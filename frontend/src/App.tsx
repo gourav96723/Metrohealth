@@ -5,6 +5,15 @@ import { Footer } from './components/Footer';
 import { Sidebar } from './components/Sidebar';
 import { HospitalHeader } from './components/HospitalHeader';
 
+// Therapist Specialist Components
+import { TherapistSidebar } from './components/TherapistSidebar';
+import { TherapistHeader } from './components/TherapistHeader';
+import { TherapistDashboardPage } from './pages/TherapistDashboardPage';
+import { TherapistPatientsPage } from './pages/TherapistPatientsPage';
+import { TherapistBiomechanicsPage } from './pages/TherapistBiomechanicsPage';
+import { TherapistPrescriptionPage } from './pages/TherapistPrescriptionPage';
+import { TherapistSchedulePage } from './pages/TherapistSchedulePage';
+
 // Pages
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
@@ -38,6 +47,14 @@ const MainApp: React.FC = () => {
   const [currentTargetArea, setCurrentTargetArea] = useState<string>('neck');
   const [currentTargetSide, setCurrentTargetSide] = useState<string>('both');
 
+  const therapistPages = [
+    'therapist-dashboard',
+    'therapist-patients',
+    'therapist-biomechanics',
+    'therapist-prescriptions',
+    'therapist-schedule',
+  ];
+
   const portalPages = [
     'dashboard',
     'assessment',
@@ -51,13 +68,18 @@ const MainApp: React.FC = () => {
     'profile',
     'settings',
     'exercises',
+    ...therapistPages,
   ];
 
   // Auto-route on login status change
   React.useEffect(() => {
     if (user) {
       if (currentPage === 'login' || currentPage === 'register' || currentPage === 'landing') {
-        setCurrentPage('dashboard');
+        if (user.role === 'therapist') {
+          setCurrentPage('therapist-dashboard');
+        } else {
+          setCurrentPage('dashboard');
+        }
       }
     } else {
       if (currentPage === 'landing' || portalPages.includes(currentPage)) {
@@ -67,6 +89,9 @@ const MainApp: React.FC = () => {
   }, [user]);
 
   const isPortalLayout = Boolean(user && portalPages.includes(currentPage));
+  const isTherapistPortal = Boolean(
+    user?.role === 'therapist' && (therapistPages.includes(currentPage) || ['profile', 'settings'].includes(currentPage))
+  );
 
   const handleNavigate = (page: string, params: any = {}) => {
     // If attempting to access authenticated pages without user
@@ -76,7 +101,11 @@ const MainApp: React.FC = () => {
     }
 
     if (user && ['login', 'register', 'landing'].includes(page)) {
-      setCurrentPage('dashboard');
+      if (user.role === 'therapist') {
+        setCurrentPage('therapist-dashboard');
+      } else {
+        setCurrentPage('dashboard');
+      }
       return;
     }
 
@@ -99,23 +128,62 @@ const MainApp: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-[#060e19] text-slate-100 selection:bg-teal-500 selection:text-white">
       {isPortalLayout ? (
         <div className="flex-1 flex min-h-screen">
-          {/* Hospital Left Sidebar */}
-          <Sidebar
-            currentPage={currentPage}
-            onNavigate={handleNavigate}
-            isOpen={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
-          />
+          {/* Hospital Left Sidebar: Dynamic based on user role */}
+          {isTherapistPortal ? (
+            <TherapistSidebar
+              currentPage={currentPage}
+              onNavigate={handleNavigate}
+              isOpen={sidebarOpen}
+              onClose={() => setSidebarOpen(false)}
+            />
+          ) : (
+            <Sidebar
+              currentPage={currentPage}
+              onNavigate={handleNavigate}
+              isOpen={sidebarOpen}
+              onClose={() => setSidebarOpen(false)}
+            />
+          )}
 
           {/* Main Portal Content Area */}
           <div className="flex-1 flex flex-col lg:pl-72 transition-all">
-            <HospitalHeader
-              currentPage={currentPage}
-              onNavigate={handleNavigate}
-              onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-            />
+            {isTherapistPortal ? (
+              <TherapistHeader
+                currentPage={currentPage}
+                onNavigate={handleNavigate}
+                onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+              />
+            ) : (
+              <HospitalHeader
+                currentPage={currentPage}
+                onNavigate={handleNavigate}
+                onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+              />
+            )}
 
             <main className="flex-1 pb-12">
+              {/* Doctor / Therapist Specialized Portal Pages */}
+              {currentPage === 'therapist-dashboard' && (
+                <TherapistDashboardPage onNavigate={handleNavigate} />
+              )}
+
+              {currentPage === 'therapist-patients' && (
+                <TherapistPatientsPage onNavigate={handleNavigate} params={pageParams} />
+              )}
+
+              {currentPage === 'therapist-biomechanics' && (
+                <TherapistBiomechanicsPage />
+              )}
+
+              {currentPage === 'therapist-prescriptions' && (
+                <TherapistPrescriptionPage onNavigate={handleNavigate} params={pageParams} />
+              )}
+
+              {currentPage === 'therapist-schedule' && (
+                <TherapistSchedulePage onNavigate={handleNavigate} />
+              )}
+
+              {/* Patient Core Portal Pages */}
               {currentPage === 'dashboard' && <DashboardPage onNavigate={handleNavigate} />}
 
               {/* Assessment Step 1: Guided Movement & Camera Scan */}
@@ -169,7 +237,7 @@ const MainApp: React.FC = () => {
                 <ExercisesPage onNavigate={handleNavigate} />
               )}
 
-              {/* Patient Profile */}
+              {/* Profile Page */}
               {currentPage === 'profile' && (
                 <ProfilePage onNavigate={handleNavigate} />
               )}
@@ -187,10 +255,15 @@ const MainApp: React.FC = () => {
           </div>
         </div>
       ) : currentPage === 'login' || currentPage === 'register' ? (
-        /* Standalone Modern Full-Screen Auth Layout (Image 3 Design, No Navbar/Footer clutter) */
+        /* Standalone Modern Full-Screen Auth Layout (No Navbar/Footer clutter) */
         <main className="flex-1 w-full min-h-screen">
           {currentPage === 'login' && <LoginPage onNavigate={handleNavigate} />}
-          {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
+          {currentPage === 'register' && (
+            <RegisterPage
+              onNavigate={handleNavigate}
+              initialRole={pageParams?.role || 'patient'}
+            />
+          )}
         </main>
       ) : (
         /* Other Public Pages with Standard Top Navbar & Footer */

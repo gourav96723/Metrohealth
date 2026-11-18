@@ -8,36 +8,89 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from datetime import datetime, timezone, timedelta
+from sqlalchemy import text
 from app.core.database import Base, engine, SessionLocal
 from app.core.security import hash_password
 from app.models.user import User
 from app.models.assessment import Assessment, SymptomResponse, MovementMeasurement, SafetyScreening
 from app.models.appointment import Appointment
 
+def migrate_columns():
+    """Ensure newly added columns exist in SQLite users table."""
+    columns_to_add = [
+        ("role", "VARCHAR(50) DEFAULT 'patient'"),
+        ("specialization", "VARCHAR(255)"),
+        ("license_number", "VARCHAR(100)"),
+        ("clinic_hospital", "VARCHAR(255)"),
+        ("experience_years", "INTEGER")
+    ]
+    with engine.connect() as conn:
+        try:
+            res = conn.execute(text("PRAGMA table_info(users)")).fetchall()
+            existing_cols = [r[1] for r in res]
+            for col_name, col_type in columns_to_add:
+                if col_name not in existing_cols:
+                    print(f"Adding column '{col_name}' to users table...")
+                    conn.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"))
+            conn.commit()
+        except Exception as e:
+            print(f"Column migration check: {e}")
+
 def init_database():
     print("Initializing HealthSense AI database tables...")
     Base.metadata.create_all(bind=engine)
+    migrate_columns()
     db = SessionLocal()
 
     try:
-        # Check if demo user already exists
+        # 1. Seed or update demo therapist/doctor account
+        therapist_email = "dr.rajesh@metrohealth.ai"
+        therapist = db.query(User).filter(User.email == therapist_email).first()
+        if not therapist:
+            print("Creating doctor/therapist account...")
+            therapist = User(
+                email=therapist_email,
+                hashed_password=hash_password("Doctor2026!"),
+                full_name="Dr. Rajesh Sharma, MS (Ortho)",
+                role="therapist",
+                specialization="Chief Orthopaedic & Sports Physical Rehabilitation Specialist",
+                license_number="MCI-84729-D / DPT-9921",
+                clinic_hospital="MetroHealth Super Speciality Hospital, New Delhi",
+                experience_years=14,
+                phone_number="+91 96537 66889",
+                is_active=True
+            )
+            db.add(therapist)
+            db.commit()
+            print(f"Therapist created: {therapist_email} (Password: Doctor2026!)")
+        else:
+            therapist.role = "therapist"
+            therapist.specialization = "Chief Orthopaedic & Sports Physical Rehabilitation Specialist"
+            therapist.license_number = "MCI-84729-D / DPT-9921"
+            therapist.clinic_hospital = "MetroHealth Super Speciality Hospital, New Delhi"
+            therapist.experience_years = 14
+            db.commit()
+
+        # 2. Check if demo user already exists
         demo_email = "demo@healthsense.ai"
         user = db.query(User).filter(User.email == demo_email).first()
 
         if not user:
-            print("Creating demo user account...")
+            print("Creating demo patient account...")
             user = User(
                 email=demo_email,
                 hashed_password=hash_password("HealthSense2026!"),
                 full_name="Aarav Sharma",
                 age=28,
                 gender="Male",
+                phone_number="+91 96537 66889",
+                role="patient",
                 is_active=True
             )
             db.add(user)
             db.commit()
             db.refresh(user)
-            print(f"Demo user created: {demo_email} (Password: HealthSense2026!)")
+            print(f"Demo patient created: {demo_email} (Password: HealthSense2026!)")
 
             # Seed sample completed assessment
             print("Seeding sample demonstration assessment...")

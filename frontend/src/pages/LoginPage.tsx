@@ -21,7 +21,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 interface LoginPageProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, params?: any) => void;
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
@@ -286,7 +286,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               <div className="p-1 rounded-2xl bg-[#060e1a]/90 border border-slate-700/60 grid grid-cols-2 gap-1 text-xs font-semibold">
                 <button
                   type="button"
-                  onClick={() => setRole('patient')}
+                  onClick={() => {
+                    setRole('patient');
+                    if (identifier === 'dr.rajesh@metrohealth.ai') {
+                      setIdentifier('demo@healthsense.ai');
+                      setPassword('HealthSense2026!');
+                    }
+                  }}
                   className={`py-2 px-3 rounded-xl transition flex items-center justify-center gap-1.5 ${
                     role === 'patient'
                       ? 'bg-gradient-to-r from-teal-500/30 to-cyan-500/30 text-cyan-300 border border-cyan-500/40 shadow-sm'
@@ -298,7 +304,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setRole('therapist')}
+                  onClick={() => {
+                    setRole('therapist');
+                    if (!identifier || identifier === 'demo@healthsense.ai') {
+                      setIdentifier('dr.rajesh@metrohealth.ai');
+                      setPassword('Doctor2026!');
+                    }
+                  }}
                   className={`py-2 px-3 rounded-xl transition flex items-center justify-center gap-1.5 ${
                     role === 'therapist'
                       ? 'bg-gradient-to-r from-teal-500/30 to-cyan-500/30 text-cyan-300 border border-cyan-500/40 shadow-sm'
@@ -309,6 +321,26 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                   <span>Therapist</span>
                 </button>
               </div>
+
+              {/* Therapist Demo Quick Fill Badge when therapist is selected */}
+              {role === 'therapist' && (
+                <div className="p-2.5 rounded-xl bg-teal-950/40 border border-teal-500/30 flex items-center justify-between text-[11px] text-teal-300">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+                    <span>Doctor Demo: <strong>dr.rajesh@metrohealth.ai</strong></span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIdentifier('dr.rajesh@metrohealth.ai');
+                      setPassword('Doctor2026!');
+                    }}
+                    className="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 border border-teal-500/40 transition"
+                  >
+                    Quick Fill
+                  </button>
+                </div>
+              )}
 
               {/* Error Message */}
               {error && (
@@ -395,13 +427,27 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               {/* Bottom Support & Registration Links */}
               <div className="space-y-2 text-center text-xs text-slate-400 pt-1">
                 <div>
-                  New patient at MetroHealth?{' '}
-                  <button
-                    onClick={() => onNavigate('register')}
-                    className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline"
-                  >
-                    Register Patient Record
-                  </button>
+                  {role === 'therapist' ? (
+                    <>
+                      New therapist or doctor at MetroHealth?{' '}
+                      <button
+                        onClick={() => onNavigate('register', { role: 'therapist' })}
+                        className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline"
+                      >
+                        Register Practitioner Record
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      New patient at MetroHealth?{' '}
+                      <button
+                        onClick={() => onNavigate('register', { role: 'patient' })}
+                        className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline"
+                      >
+                        Register Patient Record
+                      </button>
+                    </>
+                  )}
                 </div>
                 <div className="text-[11px] text-slate-500">
                   Clinic Helpline: +91 9653766889 • Emergency: 100 / 112 / 108

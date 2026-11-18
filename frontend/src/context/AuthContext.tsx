@@ -12,6 +12,11 @@ interface AuthContextType {
     password: string;
     full_name: string;
     phone_number?: string;
+    role?: 'patient' | 'therapist';
+    specialization?: string;
+    license_number?: string;
+    clinic_hospital?: string;
+    experience_years?: number;
     age?: number;
     gender?: string;
     medical_notes?: string;
@@ -55,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(res.user);
   };
 
-  const register = async (data: { email: string; password: string; full_name: string; age?: number; gender?: string }) => {
+  const register = async (data: any) => {
     const res = await api.register(data);
     localStorage.setItem('healthsense_token', res.access_token);
     setToken(res.access_token);

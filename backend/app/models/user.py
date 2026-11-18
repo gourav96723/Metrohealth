@@ -13,6 +13,11 @@ class User(Base):
     age = Column(Integer, nullable=True)
     gender = Column(String(50), nullable=True)
     phone_number = Column(String(50), nullable=True)
+    role = Column(String(50), default="patient")  # "patient" or "therapist"
+    specialization = Column(String(255), nullable=True)
+    license_number = Column(String(100), nullable=True)
+    clinic_hospital = Column(String(255), nullable=True)
+    experience_years = Column(Integer, nullable=True)
     medical_notes = Column(String(500), nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

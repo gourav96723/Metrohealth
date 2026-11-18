@@ -32,6 +32,11 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
         age=user_in.age,
         gender=user_in.gender,
         phone_number=user_in.phone_number,
+        role=user_in.role or "patient",
+        specialization=user_in.specialization,
+        license_number=user_in.license_number,
+        clinic_hospital=user_in.clinic_hospital,
+        experience_years=user_in.experience_years,
         medical_notes=user_in.medical_notes,
         is_active=True
     )
@@ -101,6 +106,16 @@ def update_profile(
         current_user.gender = updates.gender
     if updates.phone_number is not None:
         current_user.phone_number = updates.phone_number
+    if updates.role is not None:
+        current_user.role = updates.role
+    if updates.specialization is not None:
+        current_user.specialization = updates.specialization
+    if updates.license_number is not None:
+        current_user.license_number = updates.license_number
+    if updates.clinic_hospital is not None:
+        current_user.clinic_hospital = updates.clinic_hospital
+    if updates.experience_years is not None:
+        current_user.experience_years = updates.experience_years
     if updates.medical_notes is not None:
         current_user.medical_notes = updates.medical_notes
     db.commit()

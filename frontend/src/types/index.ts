@@ -3,6 +3,11 @@ export interface User {
   email: string;
   full_name: string;
   phone_number?: string;
+  role?: 'patient' | 'therapist';
+  specialization?: string;
+  license_number?: string;
+  clinic_hospital?: string;
+  experience_years?: number;
   age?: number;
   gender?: string;
   medical_notes?: string;

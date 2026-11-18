@@ -8,6 +8,11 @@ class UserBase(BaseModel):
     age: Optional[int] = Field(None, ge=1, le=120)
     gender: Optional[str] = None
     phone_number: Optional[str] = None
+    role: Optional[str] = "patient" # "patient" or "therapist"
+    specialization: Optional[str] = None
+    license_number: Optional[str] = None
+    clinic_hospital: Optional[str] = None
+    experience_years: Optional[int] = None
     medical_notes: Optional[str] = None
 
 class UserCreate(UserBase):
@@ -22,6 +27,11 @@ class UserUpdate(BaseModel):
     age: Optional[int] = Field(None, ge=1, le=120)
     gender: Optional[str] = None
     phone_number: Optional[str] = None
+    role: Optional[str] = None
+    specialization: Optional[str] = None
+    license_number: Optional[str] = None
+    clinic_hospital: Optional[str] = None
+    experience_years: Optional[int] = None
     medical_notes: Optional[str] = None
 
 class PasswordChangeRequest(BaseModel):

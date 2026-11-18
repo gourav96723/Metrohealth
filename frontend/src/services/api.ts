@@ -40,6 +40,11 @@ export const api = {
     password: string;
     full_name: string;
     phone_number?: string;
+    role?: 'patient' | 'therapist';
+    specialization?: string;
+    license_number?: string;
+    clinic_hospital?: string;
+    experience_years?: number;
     age?: number;
     gender?: string;
     medical_notes?: string;
@@ -242,5 +247,36 @@ export const api = {
       }),
     });
     return handleResponse<AppointmentRecord>(res);
+  },
+
+  // --- THERAPIST / CLINICAL PORTAL ---
+  async getTherapistStats(): Promise<any> {
+    const res = await fetch(`${BASE_URL}/therapist/dashboard-stats`, {
+      headers: getAuthHeader(),
+    });
+    return handleResponse<any>(res);
+  },
+
+  async getTherapistQueue(): Promise<any[]> {
+    const res = await fetch(`${BASE_URL}/therapist/opd-queue`, {
+      headers: getAuthHeader(),
+    });
+    return handleResponse<any[]>(res);
+  },
+
+  async getTherapistPatients(): Promise<any[]> {
+    const res = await fetch(`${BASE_URL}/therapist/patients`, {
+      headers: getAuthHeader(),
+    });
+    return handleResponse<any[]>(res);
+  },
+
+  async prescribeRegimen(data: any): Promise<any> {
+    const res = await fetch(`${BASE_URL}/therapist/prescribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(data),
+    });
+    return handleResponse<any>(res);
   },
 };
