@@ -66,10 +66,20 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#080d1a] text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 relative overflow-x-hidden selection:bg-teal-500 selection:text-white">
-      {/* Background subtle radial lighting effects */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-sky-500/10 rounded-full blur-[140px]" />
+    <div className="min-h-screen w-full bg-[#060e19] text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 relative overflow-x-hidden selection:bg-teal-500 selection:text-white">
+      {/* Background 3D Medical Scene with Subtle Breathing Motion */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div
+          className="absolute inset-0 w-full h-full opacity-35"
+          style={{
+            backgroundImage: `url('/assets/posture_bg_hd.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 40%',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#060e19]/90 via-[#060e19]/70 to-[#060e19]/95" />
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[140px]" />
         <div className="absolute top-1/2 -right-40 w-[550px] h-[550px] bg-teal-500/10 rounded-full blur-[140px]" />
       </div>
 
