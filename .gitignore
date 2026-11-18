@@ -35,3 +35,6 @@ backend/test.db
 .env
 .env.local
 .env.production
+
+# IDE & Agents
+.agents/

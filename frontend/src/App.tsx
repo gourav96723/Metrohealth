@@ -186,15 +186,19 @@ const MainApp: React.FC = () => {
             </main>
           </div>
         </div>
+      ) : currentPage === 'login' || currentPage === 'register' ? (
+        /* Standalone Modern Full-Screen Auth Layout (Image 3 Design, No Navbar/Footer clutter) */
+        <main className="flex-1 w-full min-h-screen">
+          {currentPage === 'login' && <LoginPage onNavigate={handleNavigate} />}
+          {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
+        </main>
       ) : (
-        /* Public Layout with Standard Top Navbar & Footer */
+        /* Other Public Pages with Standard Top Navbar & Footer */
         <>
           <Navbar currentPage={currentPage} onNavigate={handleNavigate} />
 
           <main className="flex-1">
             {currentPage === 'landing' && <LandingPage onNavigate={handleNavigate} />}
-            {currentPage === 'login' && <LoginPage onNavigate={handleNavigate} />}
-            {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
             {currentPage === 'privacy' && <PrivacyTermsPage onNavigate={handleNavigate} />}
             {currentPage === 'consultants' && <ConsultantsPage onNavigate={handleNavigate} />}
             {currentPage === 'exercises' && <ExercisesPage onNavigate={handleNavigate} />}
