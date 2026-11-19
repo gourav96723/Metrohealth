@@ -85,35 +85,30 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-7 max-w-5xl mx-auto">
+    <div className="w-full max-w-5xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-white tracking-tight">
-              Clinical Exercise Prescription Builder
-            </h1>
-            <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
-              MCI Digital Protocol
-            </span>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Author and sign personalized evidence-based physical therapy regimens directly integrated with patient mobile app
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            Exercise Prescription Builder
+          </h1>
+          <p className="text-xs text-slate-400 font-mono mt-0.5">
+            Prescribe customized 3-day physiotherapy regimens directly to patient portal
           </p>
         </div>
 
         <button
           onClick={() => onNavigate('therapist-patients')}
-          className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition self-start sm:self-auto"
+          className="px-3.5 py-1.5 rounded-xl bg-[#0c1f35] hover:bg-[#122b49] text-teal-300 text-xs font-semibold border border-teal-500/25 transition self-start sm:self-auto"
         >
-          View Patient Registry
+          Patient Registry
         </button>
       </div>
 
-      <form onSubmit={handleIssuePrescription} className="space-y-6">
+      <form onSubmit={handleIssuePrescription} className="space-y-5">
         {/* Step 1: Patient Selection & Target Area */}
-        <div className="p-6 rounded-3xl bg-[#0b1626]/85 border border-slate-800/80 shadow-xl space-y-5">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2">
+        <div className="p-5 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl shadow-xl space-y-4">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
             <User className="w-4 h-4" />
             <span>1. Patient & Anatomical Focus</span>
           </h3>
@@ -126,7 +121,7 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
               <select
                 value={patientName}
                 onChange={(e) => setPatientName(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-[#080d1a] border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-cyan-400 outline-none transition"
+                className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
               >
                 <option value="Neha Gupta">Neha Gupta (34y, F) • Lumbar-Pelvic Asymmetry</option>
                 <option value="Aarav Sharma">Aarav Sharma (28y, M) • Cervical Spine Stiffness</option>
@@ -143,7 +138,7 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
               <select
                 value={targetArea}
                 onChange={(e) => setTargetArea(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-[#080d1a] border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-cyan-400 outline-none transition"
+                className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
               >
                 <option value="lower_back">Lower Back & Lumbar-Pelvic Core</option>
                 <option value="neck">Neck & Cervical Spine</option>
@@ -156,7 +151,7 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
         </div>
 
         {/* Step 2: Exercise Selection Matrix */}
-        <div className="p-6 rounded-3xl bg-[#0b1626]/85 border border-slate-800/80 shadow-xl space-y-4">
+        <div className="p-5 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl shadow-xl space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
               <Activity className="w-4 h-4" />
@@ -174,21 +169,21 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
                   onClick={() => toggleExercise(ex.id)}
                   className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start gap-3 select-none ${
                     isSelected
-                      ? 'bg-cyan-950/40 border-cyan-500/50 shadow-md ring-1 ring-cyan-500/30'
-                      : 'bg-[#080d1a] border-slate-800 hover:border-slate-700 opacity-60'
+                      ? 'bg-teal-950/40 border-teal-500/50 shadow-md ring-1 ring-teal-500/30'
+                      : 'bg-[#081525] border-slate-800 hover:border-slate-700 opacity-60'
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={isSelected}
                     onChange={() => {}}
-                    className="mt-1 rounded border-slate-700 bg-slate-900 text-cyan-400 focus:ring-cyan-400"
+                    className="mt-1 rounded border-slate-700 bg-slate-900 text-teal-400 focus:ring-teal-400"
                   />
                   <div className="min-w-0 flex-1">
                     <p className={`text-xs font-bold truncate ${isSelected ? 'text-white' : 'text-slate-300'}`}>
                       {ex.name}
                     </p>
-                    <p className="text-[10px] text-cyan-300 font-mono mt-0.5">{ex.category}</p>
+                    <p className="text-[10px] text-teal-300 font-mono mt-0.5">{ex.category}</p>
                     <p className="text-[11px] text-slate-400 mt-1">{ex.defaultDosage}</p>
                   </div>
                 </div>
@@ -198,10 +193,10 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
         </div>
 
         {/* Step 3: Clinical Dosage & Frequency */}
-        <div className="p-6 rounded-3xl bg-[#0b1626]/85 border border-slate-800/80 shadow-xl space-y-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2">
+        <div className="p-5 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl shadow-xl space-y-4">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
             <Clock className="w-4 h-4" />
-            <span>3. Dosage, Clinical Frequency & Instructions</span>
+            <span>3. Dosage & Clinical Instructions</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -214,7 +209,7 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
                 value={dailyFrequency}
                 onChange={(e) => setDailyFrequency(e.target.value)}
                 placeholder="2 times daily (Morning & Evening)"
-                className="w-full px-3.5 py-2.5 bg-[#080d1a] border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-cyan-400 outline-none transition"
+                className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
               />
             </div>
 
@@ -225,11 +220,11 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
               <select
                 value={programDuration}
                 onChange={(e) => setProgramDuration(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-[#080d1a] border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-cyan-400 outline-none transition"
+                className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
               >
-                <option value="3-Day Supervised Regimen">3-Day Supervised Regimen (Standard Initial Phase)</option>
-                <option value="7-Day Progressive Protocol">7-Day Progressive Mobility Protocol</option>
-                <option value="14-Day Maintenance Cycle">14-Day Maintenance & Core Endurance Cycle</option>
+                <option value="3-Day Supervised Regimen">3-Day Supervised Regimen</option>
+                <option value="7-Day Progressive Protocol">7-Day Progressive Protocol</option>
+                <option value="14-Day Maintenance Cycle">14-Day Maintenance Cycle</option>
               </select>
             </div>
           </div>
@@ -242,7 +237,7 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
               value={doctorNotes}
               onChange={(e) => setDoctorNotes(e.target.value)}
               rows={2}
-              className="w-full px-3.5 py-2.5 bg-[#080d1a] border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-cyan-400 outline-none transition"
+              className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
             />
           </div>
 
@@ -254,23 +249,23 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
               value={precaution}
               onChange={(e) => setPrecaution(e.target.value)}
               rows={2}
-              className="w-full px-3.5 py-2.5 bg-[#080d1a] border border-slate-700 rounded-xl text-xs text-white focus:ring-2 focus:ring-cyan-400 outline-none transition"
+              className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
             />
           </div>
         </div>
 
         {/* Doctor Digital Seal & Sign-Off */}
-        <div className="p-6 rounded-3xl bg-gradient-to-r from-[#0c1a2e] to-[#07111e] border border-cyan-500/30 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div className="p-5 rounded-[18px] bg-[#0c1f35]/90 border border-teal-500/30 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-5">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-400 text-slate-950 flex items-center justify-center font-black shadow-lg">
-              <Award className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-400 text-slate-950 flex items-center justify-center font-black shadow-lg">
+              <Award className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-bold text-white">
-                Digitally Authorized by {user?.full_name || 'Dr. Rajesh Sharma, MS (Ortho)'}
+              <p className="text-xs sm:text-sm font-bold text-white">
+                Authorized by {user?.full_name || 'Dr. Rajesh Sharma, MS (Ortho)'}
               </p>
-              <p className="text-xs text-cyan-300 font-mono mt-0.5">
-                Reg No: {user?.license_number || 'MCI-84729-D'} • MetroHealth Hospital
+              <p className="text-[11px] text-teal-300 font-mono mt-0.5">
+                Reg: {user?.license_number || 'MCI-84729-D'} • MetroHealth Hospital
               </p>
             </div>
           </div>
@@ -278,10 +273,10 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
           <button
             type="submit"
             disabled={loading}
-            className="w-full sm:w-auto px-7 py-3 rounded-2xl bg-gradient-to-r from-teal-500 via-cyan-400 to-teal-400 text-slate-950 font-bold text-sm shadow-xl shadow-cyan-500/25 hover:brightness-110 active:scale-95 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 via-cyan-400 to-teal-400 text-slate-950 font-bold text-xs shadow-xl shadow-teal-500/25 hover:brightness-110 active:scale-95 transition disabled:opacity-50 flex items-center justify-center gap-2"
           >
             <FileSignature className="w-4 h-4" />
-            <span>{loading ? 'Authorizing & Encrypting...' : 'Sign & Issue Digital Prescription'}</span>
+            <span>{loading ? 'Authorizing...' : 'Sign & Issue Digital Prescription'}</span>
           </button>
         </div>
       </form>

@@ -101,7 +101,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   return (
     <div
       onMouseMove={handleMouseMove}
-      className="min-h-screen w-full bg-[#060e19] text-slate-100 flex flex-col justify-between overflow-x-hidden relative select-none font-sans"
+      className="min-h-screen w-full bg-gradient-to-br from-[#061222] via-[#08172b] to-[#0b1e33] text-slate-100 flex flex-col justify-between overflow-x-hidden relative select-none font-sans"
     >
       <style>{`
         /* Smooth breathing sway for posture and 3D medical anatomy */

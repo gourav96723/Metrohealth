@@ -74,56 +74,50 @@ export const TherapistPatientsPage: React.FC<TherapistPatientsPageProps> = ({ on
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-7 max-w-7xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-white tracking-tight">
-              Patient EMR & Posture Registry
-            </h1>
-            <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
-              {patients.length} Active Records
-            </span>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Electronic Medical Records with client-evaluated computer-vision joint kinematics and 3-day recovery tracking
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            Patient EMR Records
+          </h1>
+          <p className="text-xs text-slate-400 font-mono mt-0.5">
+            {patients.length} active clinical patient dossiers with posture angle measurements
           </p>
         </div>
 
         {/* Action Button */}
         <button
           onClick={() => onNavigate('therapist-prescriptions')}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 via-cyan-400 to-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-cyan-500/20 hover:brightness-110 active:scale-95 transition flex items-center gap-2 self-start md:self-auto"
+          className="px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 via-cyan-400 to-teal-400 text-slate-950 font-bold text-xs shadow-md shadow-cyan-500/20 hover:brightness-110 active:scale-95 transition flex items-center gap-2 self-start sm:self-auto"
         >
           <FileSignature className="w-4 h-4" />
-          <span>New Prescription Order</span>
+          <span>New Prescription</span>
         </button>
       </div>
 
       {/* Search & Filter Bar */}
       <div className="flex flex-col sm:flex-row items-center gap-3">
         <div className="relative flex-1 w-full">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by patient name, diagnosed condition, or mobile number..."
-            className="w-full pl-10 pr-4 py-2.5 bg-[#0b1626] border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition"
+            placeholder="Search patient name, condition, or mobile..."
+            className="w-full pl-10 pr-4 py-2 bg-[#0c1f35]/80 border border-teal-500/20 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-teal-400/60 transition"
           />
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-          <Filter className="w-4 h-4 text-slate-500 hidden sm:block flex-shrink-0" />
           {(['all', 'neck', 'lower_back', 'knees', 'shoulders', 'upper_back'] as const).map((area) => (
             <button
               key={area}
               onClick={() => setSelectedArea(area)}
-              className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap capitalize transition ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap capitalize transition ${
                 selectedArea === area
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                  : 'bg-[#0b1626] text-slate-400 hover:text-slate-200 border border-slate-800'
+                  ? 'bg-teal-500/25 text-teal-300 border border-teal-400/40 shadow-sm'
+                  : 'bg-[#0c1f35]/60 text-slate-400 hover:text-white border border-slate-800'
               }`}
             >
               {area.replace('_', ' ')}
@@ -137,20 +131,20 @@ export const TherapistPatientsPage: React.FC<TherapistPatientsPageProps> = ({ on
         {filteredPatients.map((patient) => (
           <div
             key={patient.id}
-            className="p-5 rounded-3xl bg-[#0b1626]/85 border border-slate-800/80 hover:border-cyan-500/40 shadow-xl transition-all space-y-4 flex flex-col justify-between group"
+            className="p-5 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 hover:border-teal-400/40 backdrop-blur-xl shadow-xl transition-all space-y-4 flex flex-col justify-between group"
           >
             {/* Top Card Info */}
             <div className="space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500/20 to-teal-500/20 border border-cyan-500/30 text-cyan-300 font-bold text-sm flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-teal-500/30 to-cyan-500/20 border border-teal-500/40 text-teal-300 font-bold text-sm flex items-center justify-center shadow-md">
                     {patient.full_name
                       .split(' ')
                       .map((n: string) => n[0])
                       .join('')}
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white group-hover:text-cyan-300 transition">
+                    <h3 className="text-sm font-bold text-white group-hover:text-teal-300 transition">
                       {patient.full_name}
                     </h3>
                     <p className="text-[11px] text-slate-400 font-mono">
@@ -173,27 +167,27 @@ export const TherapistPatientsPage: React.FC<TherapistPatientsPageProps> = ({ on
               </div>
 
               {/* Diagnosed Condition */}
-              <div className="p-3 rounded-2xl bg-[#08101d] border border-slate-800/80 space-y-1">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Primary Clinical Diagnosis
+              <div className="p-2.5 rounded-xl bg-[#081525] border border-slate-800/80 space-y-0.5">
+                <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                  Diagnosis
                 </div>
-                <div className="text-xs font-semibold text-slate-200">
+                <div className="text-xs font-semibold text-slate-200 truncate">
                   {patient.primary_condition}
                 </div>
               </div>
 
               {/* Biomechanical Telemetry Mini Stats */}
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-2 rounded-xl bg-[#070e1a] border border-slate-800">
-                  <span className="text-[10px] text-slate-400 block">Posture</span>
-                  <span className="text-xs font-bold text-cyan-300">{patient.posture_score}%</span>
+                <div className="p-2 rounded-xl bg-[#071322] border border-slate-800">
+                  <span className="text-[9px] text-slate-400 block">Symmetry</span>
+                  <span className="text-xs font-bold text-teal-300">{patient.posture_score}%</span>
                 </div>
-                <div className="p-2 rounded-xl bg-[#070e1a] border border-slate-800">
-                  <span className="text-[10px] text-slate-400 block">Shoulder Tilt</span>
-                  <span className="text-xs font-bold text-teal-300">{patient.shoulder_alignment_deg}°</span>
+                <div className="p-2 rounded-xl bg-[#071322] border border-slate-800">
+                  <span className="text-[9px] text-slate-400 block">Shoulder Tilt</span>
+                  <span className="text-xs font-bold text-cyan-300">{patient.shoulder_alignment_deg}°</span>
                 </div>
-                <div className="p-2 rounded-xl bg-[#070e1a] border border-slate-800">
-                  <span className="text-[10px] text-slate-400 block">Spine Dev</span>
+                <div className="p-2 rounded-xl bg-[#071322] border border-slate-800">
+                  <span className="text-[9px] text-slate-400 block">Spine Dev</span>
                   <span className="text-xs font-bold text-amber-300">{patient.spine_lateral_deg}°</span>
                 </div>
               </div>
@@ -201,14 +195,14 @@ export const TherapistPatientsPage: React.FC<TherapistPatientsPageProps> = ({ on
               {/* Rehab Progress Bar */}
               <div className="space-y-1.5 pt-1">
                 <div className="flex justify-between text-[11px] text-slate-400">
-                  <span>Rehabilitation Protocol</span>
-                  <span className="font-semibold text-cyan-300">
+                  <span>Protocol</span>
+                  <span className="font-semibold text-teal-300">
                     Day {patient.rehab_day} of {patient.total_rehab_days} ({patient.adherence_rate})
                   </span>
                 </div>
                 <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full"
+                    className="h-full bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full shadow-[0_0_8px_#2dd4bf]"
                     style={{
                       width: `${(patient.rehab_day / patient.total_rehab_days) * 100}%`,
                     }}
@@ -220,16 +214,16 @@ export const TherapistPatientsPage: React.FC<TherapistPatientsPageProps> = ({ on
             {/* Bottom Actions */}
             <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
               <span className="text-[10px] text-slate-500 font-mono">
-                Scan: {patient.last_scan_date}
+                {patient.last_scan_date}
               </span>
 
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => setSelectedPatient(patient)}
-                  className="px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-semibold transition flex items-center gap-1"
+                  className="px-3 py-1.5 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/40 text-xs font-semibold transition flex items-center gap-1"
                 >
                   <Eye className="w-3.5 h-3.5" />
-                  <span>View Dossier</span>
+                  <span>Dossier</span>
                 </button>
                 <button
                   onClick={() =>
