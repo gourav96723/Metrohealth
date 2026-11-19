@@ -286,13 +286,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               <div className="p-1 rounded-2xl bg-[#060e1a]/90 border border-slate-700/60 grid grid-cols-2 gap-1 text-xs font-semibold">
                 <button
                   type="button"
-                  onClick={() => {
-                    setRole('patient');
-                    if (identifier === 'dr.rajesh@metrohealth.ai') {
-                      setIdentifier('demo@healthsense.ai');
-                      setPassword('HealthSense2026!');
-                    }
-                  }}
+                  onClick={() => setRole('patient')}
                   className={`py-2 px-3 rounded-xl transition flex items-center justify-center gap-1.5 ${
                     role === 'patient'
                       ? 'bg-gradient-to-r from-teal-500/30 to-cyan-500/30 text-cyan-300 border border-cyan-500/40 shadow-sm'
@@ -304,13 +298,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setRole('therapist');
-                    if (!identifier || identifier === 'demo@healthsense.ai') {
-                      setIdentifier('dr.rajesh@metrohealth.ai');
-                      setPassword('Doctor2026!');
-                    }
-                  }}
+                  onClick={() => setRole('therapist')}
                   className={`py-2 px-3 rounded-xl transition flex items-center justify-center gap-1.5 ${
                     role === 'therapist'
                       ? 'bg-gradient-to-r from-teal-500/30 to-cyan-500/30 text-cyan-300 border border-cyan-500/40 shadow-sm'
@@ -321,26 +309,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                   <span>Therapist</span>
                 </button>
               </div>
-
-              {/* Therapist Demo Quick Fill Badge when therapist is selected */}
-              {role === 'therapist' && (
-                <div className="p-2.5 rounded-xl bg-teal-950/40 border border-teal-500/30 flex items-center justify-between text-[11px] text-teal-300">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-                    <span>Doctor Demo: <strong>dr.rajesh@metrohealth.ai</strong></span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIdentifier('dr.rajesh@metrohealth.ai');
-                      setPassword('Doctor2026!');
-                    }}
-                    className="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 border border-teal-500/40 transition"
-                  >
-                    Quick Fill
-                  </button>
-                </div>
-              )}
 
               {/* Error Message */}
               {error && (
