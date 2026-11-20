@@ -19,6 +19,7 @@ import {
   FolderOpen
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
 
 interface LoginPageProps {
   onNavigate: (page: string, params?: any) => void;
@@ -79,12 +80,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     if (!forgotEmail) return;
     setForgotLoading(true);
     try {
-      const res = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: forgotEmail.trim() }),
-      });
-      const data = await res.json();
+      const data = await api.forgotPassword(forgotEmail.trim());
       setForgotMsg(
         data.message ||
           'If an account exists, password reset instructions have been dispatched. You can also call +91 9653766889.'

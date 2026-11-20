@@ -12,7 +12,9 @@ import {
   SafetyScreeningData
 } from '../types';
 
-const BASE_URL = '/api';
+const RAW_URL = (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '').trim();
+
+export const BASE_URL = RAW_URL ? `${RAW_URL.replace(/\/$/, '')}/api` : '/api';
 
 function getAuthHeader(): Record<string, string> {
   const token = localStorage.getItem('healthsense_token');
@@ -92,6 +94,27 @@ export const api = {
     const res = await fetch(`${BASE_URL}/auth/me`, {
       method: 'DELETE',
       headers: getAuthHeader(),
+    });
+    return handleResponse<{ message: string }>(res);
+  },
+
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    return handleResponse<{ message: string }>(res);
+  },
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
+    const res = await fetch(`${BASE_URL}/auth/change-password`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
     });
     return handleResponse<{ message: string }>(res);
   },

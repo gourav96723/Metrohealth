@@ -1,0 +1,10 @@
+{
+  "name": "metrohealth-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MetroHealth AI - Hospital Physiotherapy & Posture Assessment Platform",
+  "scripts": {
+    "build": "npm --prefix frontend run build",
+    "dev": "npm --prefix frontend run dev"
+  }
+}

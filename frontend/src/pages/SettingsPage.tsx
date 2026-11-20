@@ -14,6 +14,7 @@ import {
   Camera
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
 
 interface SettingsPageProps {
   onNavigate: (page: string) => void;
@@ -54,24 +55,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onNavigate }) => {
 
     setPwdLoading(true);
     try {
-      const token = localStorage.getItem('healthsense_token');
-      const res = await fetch('/api/auth/change-password', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          current_password: currentPassword,
-          new_password: newPassword,
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.detail || 'Password change failed.');
-      }
-
+      await api.changePassword(currentPassword, newPassword);
       setPwdSuccess('Your portal password has been changed securely.');
       setCurrentPassword('');
       setNewPassword('');
