@@ -283,18 +283,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 <p className="text-xs text-slate-400 font-medium">
                   {role === 'patient'
                     ? 'Physiotherapy Portal'
-                    : role === 'therapist'
-                    ? 'Therapist & Clinical Portal'
-                    : 'Hospital Administration Hub'}
+                    : 'Therapist & Clinical Portal'}
                 </p>
               </div>
 
-              {/* Role Switcher Pill: [ Patient ] [ Therapist ] [ Admin ] */}
-              <div className="p-1 rounded-2xl bg-[#060e1a]/90 border border-slate-700/60 grid grid-cols-3 gap-1 text-[11px] font-semibold">
+              {/* Role Switcher Pill: [ Patient ] [ Doctor ] (Admin is hidden) */}
+              <div className="p-1 rounded-2xl bg-[#060e1a]/90 border border-slate-700/60 grid grid-cols-2 gap-1 text-[11px] font-semibold">
                 <button
                   type="button"
                   onClick={() => setRole('patient')}
-                  className={`py-2 px-1.5 rounded-xl transition flex items-center justify-center gap-1 ${
+                  className={`py-2 px-1.5 rounded-xl transition flex items-center justify-center gap-1.5 ${
                     role === 'patient'
                       ? 'bg-gradient-to-r from-teal-500/30 to-cyan-500/30 text-cyan-300 border border-cyan-500/40 shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
@@ -306,7 +304,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 <button
                   type="button"
                   onClick={() => setRole('therapist')}
-                  className={`py-2 px-1.5 rounded-xl transition flex items-center justify-center gap-1 ${
+                  className={`py-2 px-1.5 rounded-xl transition flex items-center justify-center gap-1.5 ${
                     role === 'therapist'
                       ? 'bg-gradient-to-r from-teal-500/30 to-cyan-500/30 text-cyan-300 border border-cyan-500/40 shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
@@ -314,18 +312,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 >
                   <Stethoscope className="w-3.5 h-3.5" />
                   <span>Doctor</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole('admin')}
-                  className={`py-2 px-1.5 rounded-xl transition flex items-center justify-center gap-1 ${
-                    role === 'admin'
-                      ? 'bg-gradient-to-r from-teal-500/30 to-cyan-500/30 text-cyan-300 border border-cyan-500/40 shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
-                  }`}
-                >
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Admin</span>
                 </button>
               </div>
 
@@ -342,7 +328,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 {/* Email / Mobile Field */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    {role === 'admin' ? 'Administrator Email' : 'Email or Mobile Number'}
+                    {role === 'therapist' ? 'Doctor Hospital Email' : 'Email or Mobile Number'}
                   </label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
@@ -352,11 +338,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
                       placeholder={
-                        role === 'patient'
-                          ? 'name@example.com or +91 9XXXXXXXXX'
-                          : role === 'therapist'
+                        role === 'therapist'
                           ? 'doctor@metrohealth.ai'
-                          : 'admin@metrohealth.ai'
+                          : 'name@example.com or +91 9XXXXXXXXX'
                       }
                       className="w-full pl-10 pr-3.5 py-3 text-xs bg-[#060e1a]/90 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none transition"
                     />
