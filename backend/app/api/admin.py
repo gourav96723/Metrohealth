@@ -123,7 +123,7 @@ def get_all_staff_admin(
             "id": t.id,
             "full_name": t.full_name,
             "email": t.email,
-            "phone_number": t.phone_number or "+91 96537 66889",
+            "phone_number": t.phone_number or "+91 9XXXXXXXXX",
             "specialization": t.specialization or "Specialist Physiotherapist",
             "license_number": t.license_number or "MCI-Registered",
             "clinic_hospital": t.clinic_hospital or "MetroHealth Super Speciality Hospital, New Delhi",

@@ -51,7 +51,7 @@ def auto_init_db():
                     "license_number": "MCI-84729-D",
                     "clinic_hospital": "MetroHealth Super Speciality Hospital, New Delhi",
                     "experience_years": 16,
-                    "phone_number": "+91 96537 66889"
+                    "phone_number": "+91 11-2659-4001"
                 },
                 {
                     "email": "dr.rashmi@metrohealth.ai",
@@ -61,7 +61,7 @@ def auto_init_db():
                     "license_number": "DPT-99412-M",
                     "clinic_hospital": "MetroHealth Super Speciality Hospital, New Delhi",
                     "experience_years": 14,
-                    "phone_number": "+91 98112 34567"
+                    "phone_number": "+91 11-2659-4002"
                 },
                 {
                     "email": "dr.ganpat@metrohealth.ai",
@@ -71,7 +71,7 @@ def auto_init_db():
                     "license_number": "MCI-55214-G",
                     "clinic_hospital": "MetroHealth Super Speciality Hospital, New Delhi",
                     "experience_years": 12,
-                    "phone_number": "+91 99201 88341"
+                    "phone_number": "+91 11-2659-4003"
                 }
             ]
 
@@ -105,7 +105,7 @@ def auto_init_db():
                     role="admin",
                     specialization="Hospital Operations & Patient EMR Administration",
                     clinic_hospital="MetroHealth Super Speciality Hospital, New Delhi",
-                    phone_number="+91 96537 66889",
+                    phone_number="1800-202-6000",
                     is_active=True
                 ))
 

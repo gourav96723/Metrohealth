@@ -75,7 +75,7 @@ export const HospitalHeader: React.FC<HospitalHeaderProps> = ({
         {/* Emergency Call Quick Pill */}
         <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs font-semibold">
           <PhoneCall className="w-3.5 h-3.5 text-rose-400" />
-          <span>Clinic Helpline: <strong>+91 9653766889</strong></span>
+          <span>Clinic Helpline: <strong>1800-202-6000</strong></span>
         </div>
 
         {/* Start Assessment Action */}

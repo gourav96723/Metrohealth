@@ -196,7 +196,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
           </div>
 
           <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-            <span>Clinic Helpline: +91 96537 66889</span>
+            <span>Clinic Helpline: 1800-202-6000 (Toll-Free)</span>
             <button
               onClick={() => onNavigate('consultants')}
               className="text-teal-400 hover:text-teal-300 font-bold transition flex items-center gap-1"

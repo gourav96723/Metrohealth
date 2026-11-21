@@ -219,7 +219,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, initialR
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={role === 'therapist' ? 'dr.rajesh@metrohealth.ai' : 'aarav@example.com'}
+                    placeholder={role === 'therapist' ? 'dr.rajesh@metrohealth.ai' : 'patient@example.com'}
                     className="w-full pl-10 pr-3.5 py-2.5 text-xs bg-[#080d1a] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
                   />
                 </div>
@@ -235,7 +235,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, initialR
                     type="tel"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="+91 96537 66889"
+                    placeholder="+91 9XXXXXXXXX"
                     className="w-full pl-10 pr-3.5 py-2.5 text-xs bg-[#080d1a] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
                   />
                 </div>

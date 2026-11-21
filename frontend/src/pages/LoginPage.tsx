@@ -76,7 +76,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
         onNavigate('dashboard');
       }
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please check your credentials or call +91 9653766889.');
+      setError(err.message || 'Login failed. Please check your credentials or call Helpline 1800-202-6000.');
     } finally {
       setLoading(false);
     }
@@ -90,7 +90,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
       const data = await api.forgotPassword(forgotEmail.trim());
       setForgotMsg(
         data.message ||
-          'If an account exists, password reset instructions have been dispatched. You can also call +91 9653766889.'
+          'If an account exists, password reset instructions have been dispatched. You can also call Helpline 1800-202-6000.'
       );
       setForgotSubmitted(true);
     } catch (err: any) {
@@ -353,7 +353,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                       onChange={(e) => setIdentifier(e.target.value)}
                       placeholder={
                         role === 'patient'
-                          ? 'name@example.com or 9653766889'
+                          ? 'name@example.com or +91 9XXXXXXXXX'
                           : role === 'therapist'
                           ? 'doctor@metrohealth.ai'
                           : 'admin@metrohealth.ai'
@@ -439,7 +439,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                   )}
                 </div>
                 <div className="text-[11px] text-slate-500">
-                  Clinic Helpline: +91 9653766889 • Emergency: 100 / 112 / 108
+                  Clinic Helpline: 1800-202-6000 • Emergency: 100 / 112 / 108
                 </div>
               </div>
             </div>
@@ -614,7 +614,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                     required
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
-                    placeholder="name@example.com or 9653766889"
+                    placeholder="name@example.com or +91 9XXXXXXXXX"
                     className="w-full px-3 py-2 text-xs bg-[#060e1a] border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-cyan-400 outline-none"
                   />
                 </div>

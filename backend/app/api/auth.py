@@ -156,7 +156,7 @@ def forgot_password(
     return {
         "message": (
             "If an active account is registered with this email or mobile number, secure password reset instructions "
-            "have been dispatched. For immediate patient assistance, please contact the MetroHealth clinic helpline at +91 9653766889."
+            "have been dispatched. For immediate patient assistance, please contact the MetroHealth clinic helpline at 1800-202-6000."
         )
     }
 

@@ -84,11 +84,11 @@ export const TherapistHeader: React.FC<TherapistHeaderProps> = ({
 
           {/* Hospital Helpline Button */}
           <a
-            href="tel:+919653766889"
+            href="tel:18002026000"
             className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-cyan-300 border border-slate-700/60 text-xs font-semibold transition"
           >
             <PhoneCall className="w-3.5 h-3.5 text-cyan-400" />
-            <span>+91 96537 66889</span>
+            <span>1800-202-6000</span>
           </a>
 
           {/* Clock */}

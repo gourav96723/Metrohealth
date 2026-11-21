@@ -141,7 +141,7 @@ def get_opd_queue(
             "patient_name": patient.full_name,
             "age": patient.age or 28,
             "gender": patient.gender or "Not Specified",
-            "phone": patient.phone_number or "+91 96537 66889",
+            "phone": patient.phone_number or "+91 9XXXXXXXXX",
             "chief_complaint": appt.reason or "Postural Examination & Mobility Review",
             "severity_vas": 4,
             "posture_score": posture_display,

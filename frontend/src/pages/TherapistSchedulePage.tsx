@@ -49,7 +49,7 @@ export const TherapistSchedulePage: React.FC<{ onNavigate: (page: string, params
             patientName: q.patient_name,
             age: q.age || 28,
             gender: q.gender || 'Not Specified',
-            phone: q.phone || '+91 96537 66889',
+            phone: q.phone || '+91 9XXXXXXXXX',
             timeSlot: q.time_slot || '10:00 AM',
             type: q.consultation_type || 'Telehealth Video Consult',
             chiefComplaint: q.chief_complaint || 'Postural Review',

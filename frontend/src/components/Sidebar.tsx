@@ -153,7 +153,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span className="text-[11px] font-bold">Hospital Helpdesk</span>
             </div>
             <p className="text-[10px] text-slate-400">Toll-Free 24/7 Support:</p>
-            <p className="text-xs font-bold text-teal-400">+91 9653766889</p>
+            <p className="text-xs font-bold text-teal-400">1800-202-6000</p>
           </div>
 
           {/* User Profile Summary */}
