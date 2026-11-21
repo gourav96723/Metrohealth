@@ -136,10 +136,11 @@ app = FastAPI(
     openapi_url="/openapi.json"
 )
 
-# CORS Configuration
+# CORS Configuration (Permits Vercel, localhost & testing clients)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permits local Vite frontend & testing clients
+    allow_origins=["*"],
+    allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
