@@ -88,18 +88,6 @@ MetroHealth AI adopts a **100% Client-Side Privacy Architecture**:
 
 ---
 
-## 👥 Active Hospital Accounts (India)
-
-| Role | Specialist Name | Login Email | Password | Hospital / Facility |
-|---|---|---|---|---|
-| **Senior Orthopaedic Specialist** | Dr. Rajesh Kumar Sharma | `dr.rajesh@metrohealth.ai` | `Doctor2026!` | MetroHealth Hospital, New Delhi |
-| **Chief Spine & Posture Specialist** | Dr. Rashmi Sharma | `dr.rashmi@metrohealth.ai` | `Doctor2026!` | MetroHealth Hospital, New Delhi |
-| **Consultant Joint Mobility** | Dr. Ganpat Yadav | `dr.ganpat@metrohealth.ai` | `Doctor2026!` | MetroHealth Hospital, New Delhi |
-| **Hospital Administrator** | Admin Operations Hub | `admin@metrohealth.ai` | `Admin2026!` | MetroHealth Hospital, New Delhi |
-| **Patient** | Register Any New Patient | *Via Register Tab* | *Your Password* | Patient Portal |
-
----
-
 ## 💻 Local Development Setup
 
 ### Terminal 1: Backend Server (FastAPI)
@@ -133,9 +121,9 @@ Frontend (Vercel)  ──────> API Requests (https://metrohealth-backend
 
 1. Go to [render.com](https://render.com) and sign in with your GitHub account.
 2. Click **New +** ➔ **Web Service**.
-3. Select your repository: `gourav96723/Metrohealth`.
+3. Select your repository: 
 4. Configure the Web Service settings:
-   - **Name:** `metrohealth-backend` (or any name you choose)
+   - **Name: any name you choose
    - **Region:** Singapore / Frankfurt / Oregon (any preferred region)
    - **Root Directory:** `backend`
    - **Runtime:** `Python 3`
@@ -145,9 +133,8 @@ Frontend (Vercel)  ──────> API Requests (https://metrohealth-backend
 5. Click **Create Web Service**.
 6. Render will build and deploy the backend. Once deployed, note down your live Backend URL:
    ```
-   https://metrohealth-backend.onrender.com
-   ```
-7. Verify it is running by opening `https://metrohealth-backend.onrender.com/docs` in your browser.
+   
+7. Verify it is running by opening `https://you url , in your browser.
 
 ---
 
@@ -164,7 +151,7 @@ Frontend (Vercel)  ──────> API Requests (https://metrohealth-backend
 5. **Environment Variables:**
    - Expand the **Environment Variables** section and add:
      - **Key:** `VITE_API_URL`
-     - **Value:** `https://metrohealth-backend.onrender.com` *(Use your actual Render backend URL from Step 1)*
+     - **Value:**  *(Use your actual Render backend URL from Step 1)*
 6. Click **Deploy**.
 7. In ~30 seconds, Vercel will provide your live URL:
    ```
