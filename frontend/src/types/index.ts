@@ -140,7 +140,7 @@ export interface AppointmentRecord {
   provider_specialty: string;
   clinic_name: string;
   appointment_time: string;
-  status: 'confirmed' | 'cancelled' | 'completed';
+  status: 'confirmed' | 'cancelled' | 'completed' | 'waiting' | 'in_consultation';
   consultation_type: string;
   reason?: string;
   notes?: string;

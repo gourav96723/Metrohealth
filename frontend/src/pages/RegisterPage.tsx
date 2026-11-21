@@ -200,7 +200,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, initialR
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder={role === 'therapist' ? 'Dr. Rajesh Sharma, MS (Ortho)' : 'Aarav Sharma'}
+                  placeholder={role === 'therapist' ? 'Dr. Rajesh Kumar Sharma' : 'e.g. Rahul Sharma'}
                   className="w-full pl-10 pr-3.5 py-2.5 text-xs bg-[#080d1a] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
                 />
               </div>

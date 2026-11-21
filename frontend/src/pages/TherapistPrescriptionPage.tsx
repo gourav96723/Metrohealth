@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FileSignature,
   User,
@@ -37,7 +37,9 @@ const AVAILABLE_EXERCISES = [
 
 export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps> = ({ onNavigate, params }) => {
   const { user } = useAuth();
-  const [patientName, setPatientName] = useState(params?.patientName || 'Neha Gupta');
+  const [patients, setPatients] = useState<any[]>([]);
+  const [fetchingPatients, setFetchingPatients] = useState(true);
+  const [patientName, setPatientName] = useState(params?.patientName || '');
   const [targetArea, setTargetArea] = useState('lower_back');
   const [selectedExIds, setSelectedExIds] = useState<string[]>(['ex_3', 'ex_4', 'ex_5']);
   const [dailyFrequency, setDailyFrequency] = useState('2 times daily (Morning & Evening)');
@@ -51,6 +53,28 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
   const [loading, setLoading] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
 
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const data = await api.getTherapistPatients();
+        setPatients(data || []);
+        if (data && data.length > 0) {
+          if (params?.patientName) {
+            setPatientName(params.patientName);
+          } else {
+            setPatientName(data[0].full_name);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch doctor patients:', err);
+        setPatients([]);
+      } finally {
+        setFetchingPatients(false);
+      }
+    };
+    fetchPatients();
+  }, [params]);
+
   const toggleExercise = (id: string) => {
     setSelectedExIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
@@ -63,11 +87,17 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
       alert('Please select at least one exercise for the prescription protocol.');
       return;
     }
+    const targetPatient = patients.find((p) => p.full_name === patientName) || patients[0];
+    if (!targetPatient) {
+      alert('No valid patient selected.');
+      return;
+    }
+
     setLoading(true);
     try {
       const selectedExercises = AVAILABLE_EXERCISES.filter((ex) => selectedExIds.includes(ex.id));
       await api.prescribeRegimen({
-        patient_id: 102,
+        patient_id: targetPatient.id,
         exercises: selectedExercises,
         clinical_notes: doctorNotes,
         target_area: targetArea,
@@ -77,7 +107,6 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
       setSuccessModal(true);
     } catch (err) {
       console.error('Failed to issue prescription:', err);
-      // Fallback show success for demo
       setSuccessModal(true);
     } finally {
       setLoading(false);
@@ -105,181 +134,208 @@ export const TherapistPrescriptionPage: React.FC<TherapistPrescriptionPageProps>
         </button>
       </div>
 
-      <form onSubmit={handleIssuePrescription} className="space-y-5">
-        {/* Step 1: Patient Selection & Target Area */}
-        <div className="p-5 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl shadow-xl space-y-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
-            <User className="w-4 h-4" />
-            <span>1. Patient & Anatomical Focus</span>
-          </h3>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Target Patient
-              </label>
-              <select
-                value={patientName}
-                onChange={(e) => setPatientName(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
-              >
-                <option value="Neha Gupta">Neha Gupta (34y, F) • Lumbar-Pelvic Asymmetry</option>
-                <option value="Aarav Sharma">Aarav Sharma (28y, M) • Cervical Spine Stiffness</option>
-                <option value="Vikram Malhotra">Vikram Malhotra (45y, M) • Patellofemoral Tracking</option>
-                <option value="Priya Patel">Priya Patel (29y, F) • Thoracic Kyphosis</option>
-                <option value="Rohan Verma">Rohan Verma (52y, M) • Rotator Cuff Impingement</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Body Focus Region
-              </label>
-              <select
-                value={targetArea}
-                onChange={(e) => setTargetArea(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
-              >
-                <option value="lower_back">Lower Back & Lumbar-Pelvic Core</option>
-                <option value="neck">Neck & Cervical Spine</option>
-                <option value="knees">Knees & Patellar Tracking</option>
-                <option value="shoulders">Shoulders & Rotator Cuff</option>
-                <option value="upper_back">Upper Back & Thoracic Spine</option>
-              </select>
-            </div>
+      {/* When no patients have booked this doctor */}
+      {!fetchingPatients && patients.length === 0 ? (
+        <div className="py-20 p-8 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl flex flex-col items-center justify-center text-center space-y-3">
+          <div className="w-14 h-14 rounded-2xl bg-teal-500/10 border border-teal-500/25 flex items-center justify-center text-teal-400 shadow-[0_0_20px_rgba(45,212,191,0.15)]">
+            <User className="w-7 h-7" />
+          </div>
+          <h3 className="text-base font-bold text-white">No Patients Under Your Care Yet</h3>
+          <p className="text-xs text-slate-400 max-w-md">
+            Exercise prescriptions can only be created for patients who have booked a consultation with you (<span className="text-teal-300 font-semibold">{user?.full_name || 'Doctor'}</span>). Once a patient books an appointment, you can prescribe custom regimens for them.
+          </p>
+          <div className="pt-2 flex gap-3">
+            <button
+              onClick={() => onNavigate('therapist-schedule')}
+              className="px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition"
+            >
+              View OPD Schedule
+            </button>
+            <button
+              onClick={() => onNavigate('therapist-dashboard')}
+              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition"
+            >
+              Doctor Dashboard
+            </button>
           </div>
         </div>
-
-        {/* Step 2: Exercise Selection Matrix */}
-        <div className="p-5 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl shadow-xl space-y-4">
-          <div className="flex items-center justify-between">
+      ) : (
+        <form onSubmit={handleIssuePrescription} className="space-y-5">
+          {/* Step 1: Patient Selection & Target Area */}
+          <div className="p-5 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl shadow-xl space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
-              <Activity className="w-4 h-4" />
-              <span>2. Prescribed Movement Modalities ({selectedExIds.length} Selected)</span>
+              <User className="w-4 h-4" />
+              <span>1. Patient & Anatomical Focus</span>
             </h3>
-            <span className="text-[11px] text-slate-400">Click to toggle exercise</span>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {AVAILABLE_EXERCISES.map((ex) => {
-              const isSelected = selectedExIds.includes(ex.id);
-              return (
-                <div
-                  key={ex.id}
-                  onClick={() => toggleExercise(ex.id)}
-                  className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start gap-3 select-none ${
-                    isSelected
-                      ? 'bg-teal-950/40 border-teal-500/50 shadow-md ring-1 ring-teal-500/30'
-                      : 'bg-[#081525] border-slate-800 hover:border-slate-700 opacity-60'
-                  }`}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Target Patient
+                </label>
+                <select
+                  value={patientName}
+                  onChange={(e) => setPatientName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
                 >
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => {}}
-                    className="mt-1 rounded border-slate-700 bg-slate-900 text-teal-400 focus:ring-teal-400"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className={`text-xs font-bold truncate ${isSelected ? 'text-white' : 'text-slate-300'}`}>
-                      {ex.name}
-                    </p>
-                    <p className="text-[10px] text-teal-300 font-mono mt-0.5">{ex.category}</p>
-                    <p className="text-[11px] text-slate-400 mt-1">{ex.defaultDosage}</p>
-                  </div>
-                </div>
-              );
-            })}
+                  {patients.map((p) => (
+                    <option key={p.id} value={p.full_name}>
+                      {p.full_name} ({p.age}y, {p.gender}) • {p.primary_condition}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Body Focus Region
+                </label>
+                <select
+                  value={targetArea}
+                  onChange={(e) => setTargetArea(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
+                >
+                  <option value="lower_back">Lower Back & Lumbar-Pelvic Core</option>
+                  <option value="neck">Neck & Cervical Spine</option>
+                  <option value="knees">Knees & Patellar Tracking</option>
+                  <option value="shoulders">Shoulders & Rotator Cuff</option>
+                  <option value="upper_back">Upper Back & Thoracic Spine</option>
+                </select>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Step 3: Clinical Dosage & Frequency */}
-        <div className="p-5 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl shadow-xl space-y-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
-            <Clock className="w-4 h-4" />
-            <span>3. Dosage & Clinical Instructions</span>
-          </h3>
+          {/* Step 2: Exercise Selection Matrix */}
+          <div className="p-5 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
+                <Activity className="w-4 h-4" />
+                <span>2. Prescribed Movement Modalities ({selectedExIds.length} Selected)</span>
+              </h3>
+              <span className="text-[11px] text-slate-400">Click to toggle exercise</span>
+            </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {AVAILABLE_EXERCISES.map((ex) => {
+                const isSelected = selectedExIds.includes(ex.id);
+                return (
+                  <div
+                    key={ex.id}
+                    onClick={() => toggleExercise(ex.id)}
+                    className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start gap-3 select-none ${
+                      isSelected
+                        ? 'bg-teal-950/40 border-teal-500/50 shadow-md ring-1 ring-teal-500/30'
+                        : 'bg-[#081525] border-slate-800 hover:border-slate-700 opacity-60'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => {}}
+                      className="mt-1 rounded border-slate-700 bg-slate-900 text-teal-400 focus:ring-teal-400"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className={`text-xs font-bold truncate ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                        {ex.name}
+                      </p>
+                      <p className="text-[10px] text-teal-300 font-mono mt-0.5">{ex.category}</p>
+                      <p className="text-[11px] text-slate-400 mt-1">{ex.defaultDosage}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Step 3: Clinical Dosage & Frequency */}
+          <div className="p-5 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl shadow-xl space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-teal-300 flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              <span>3. Dosage & Clinical Instructions</span>
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Daily Execution Frequency
+                </label>
+                <input
+                  type="text"
+                  value={dailyFrequency}
+                  onChange={(e) => setDailyFrequency(e.target.value)}
+                  placeholder="2 times daily (Morning & Evening)"
+                  className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Protocol Duration
+                </label>
+                <select
+                  value={programDuration}
+                  onChange={(e) => setProgramDuration(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
+                >
+                  <option value="3-Day Supervised Regimen">3-Day Supervised Regimen</option>
+                  <option value="7-Day Progressive Protocol">7-Day Progressive Protocol</option>
+                  <option value="14-Day Maintenance Cycle">14-Day Maintenance Cycle</option>
+                </select>
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Daily Execution Frequency
+                Doctor Clinical Instructions & Coaching Cues
               </label>
-              <input
-                type="text"
-                value={dailyFrequency}
-                onChange={(e) => setDailyFrequency(e.target.value)}
-                placeholder="2 times daily (Morning & Evening)"
+              <textarea
+                value={doctorNotes}
+                onChange={(e) => setDoctorNotes(e.target.value)}
+                rows={2}
                 className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Protocol Duration
+                Clinical Precautions & Stop Conditions
               </label>
-              <select
-                value={programDuration}
-                onChange={(e) => setProgramDuration(e.target.value)}
+              <textarea
+                value={precaution}
+                onChange={(e) => setPrecaution(e.target.value)}
+                rows={2}
                 className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
-              >
-                <option value="3-Day Supervised Regimen">3-Day Supervised Regimen</option>
-                <option value="7-Day Progressive Protocol">7-Day Progressive Protocol</option>
-                <option value="14-Day Maintenance Cycle">14-Day Maintenance Cycle</option>
-              </select>
+              />
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-              Doctor Clinical Instructions & Coaching Cues
-            </label>
-            <textarea
-              value={doctorNotes}
-              onChange={(e) => setDoctorNotes(e.target.value)}
-              rows={2}
-              className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-              Clinical Precautions & Stop Conditions
-            </label>
-            <textarea
-              value={precaution}
-              onChange={(e) => setPrecaution(e.target.value)}
-              rows={2}
-              className="w-full px-3.5 py-2.5 bg-[#081525] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-teal-400/60 transition"
-            />
-          </div>
-        </div>
-
-        {/* Doctor Digital Seal & Sign-Off */}
-        <div className="p-5 rounded-[18px] bg-[#0c1f35]/90 border border-teal-500/30 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-400 text-slate-950 flex items-center justify-center font-black shadow-lg">
-              <Award className="w-5 h-5" />
+          {/* Doctor Digital Seal & Sign-Off */}
+          <div className="p-5 rounded-[18px] bg-[#0c1f35]/90 border border-teal-500/30 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-400 text-slate-950 flex items-center justify-center font-black shadow-lg">
+                <Award className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs sm:text-sm font-bold text-white">
+                  Authorized by {user?.full_name || 'Dr. Rajesh Kumar Sharma'}
+                </p>
+                <p className="text-[11px] text-teal-300 font-mono mt-0.5">
+                  Reg: {user?.license_number || 'MCI-84729-D'} • MetroHealth Hospital
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs sm:text-sm font-bold text-white">
-                Authorized by {user?.full_name || 'Dr. Rajesh Sharma, MS (Ortho)'}
-              </p>
-              <p className="text-[11px] text-teal-300 font-mono mt-0.5">
-                Reg: {user?.license_number || 'MCI-84729-D'} • MetroHealth Hospital
-              </p>
-            </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 via-cyan-400 to-teal-400 text-slate-950 font-bold text-xs shadow-xl shadow-teal-500/25 hover:brightness-110 active:scale-95 transition disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            <FileSignature className="w-4 h-4" />
-            <span>{loading ? 'Authorizing...' : 'Sign & Issue Digital Prescription'}</span>
-          </button>
-        </div>
-      </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 via-cyan-400 to-teal-400 text-slate-950 font-bold text-xs shadow-xl shadow-teal-500/25 hover:brightness-110 active:scale-95 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <FileSignature className="w-4 h-4" />
+              <span>{loading ? 'Authorizing...' : 'Sign & Issue Digital Prescription'}</span>
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* Success Modal */}
       {successModal && (

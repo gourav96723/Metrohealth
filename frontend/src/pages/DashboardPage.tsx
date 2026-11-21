@@ -54,39 +54,19 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
   const completedExercises = latestAssessment?.completed_exercise_ids || [];
   const totalExercises = latestAssessment?.educational_exercises?.length || 3;
   const exercisesDoneCount = completedExercises.length;
-  const completionPercentage = totalExercises > 0 ? Math.round((exercisesDoneCount / totalExercises) * 100) : 67;
+  const completionPercentage = totalExercises > 0 ? Math.round((exercisesDoneCount / totalExercises) * 100) : 0;
 
-  const now = new Date();
-  const upcomingAppointments = appointments.filter(
-    (a) => a.status === 'confirmed' && new Date(a.appointment_time) > now
-  );
-
-  const displayAppointments = [
-    {
-      id: '1',
-      provider: 'Dr. Rajesh Sharma, MS (Ortho)',
-      time: '09:00 PM',
-      type: 'Telehealth Consult',
-      status: 'Confirmed',
-      statusType: 'in_clinic',
-    },
-    {
-      id: '2',
-      provider: 'Dr. Priya Nair, MPT',
-      time: '09:00 PM',
-      type: 'Posture Scan Review',
-      status: 'Next',
-      statusType: 'next',
-    },
-    {
-      id: '3',
-      provider: 'Dr. Amitav Ghosh, DPT',
-      time: '12:30 PM',
-      type: 'Follow-up Session',
-      status: 'Completed',
-      statusType: 'completed',
-    },
-  ];
+  // Real joint metrics if an assessment exists
+  const movement = latestAssessment?.movement_measurements?.[0];
+  const shoulderTiltVal = movement?.shoulder_alignment_deg !== null && movement?.shoulder_alignment_deg !== undefined
+    ? `${Math.abs(movement.shoulder_alignment_deg).toFixed(1)}°`
+    : '0.0°';
+  const symmetryVal = movement?.symmetry_score !== null && movement?.symmetry_score !== undefined
+    ? `${Math.round(movement.symmetry_score)}%`
+    : '95%';
+  const alignmentStatus = movement?.spine_flexion_deg !== null && movement?.spine_flexion_deg !== undefined
+    ? Math.abs(movement.spine_flexion_deg) < 3 ? 'Optimal' : 'Mild Flexion'
+    : 'Optimal';
 
   const handleToggleExercise = async (e: React.MouseEvent, exerciseId: string) => {
     e.stopPropagation();
@@ -131,61 +111,88 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
               </button>
             </div>
 
-            {/* Appointments Table */}
-            <div className="overflow-x-auto mt-2">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="text-slate-400 text-[11px] font-medium border-b border-slate-800/50">
-                    <th className="py-2.5 font-normal">Specialist</th>
-                    <th className="py-2.5 font-normal">Time</th>
-                    <th className="py-2.5 font-normal">Session Type</th>
-                    <th className="py-2.5 text-right font-normal">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/40 font-medium">
-                  {displayAppointments.map((item) => {
-                    const isInClinic = item.statusType === 'in_clinic';
-                    const isNext = item.statusType === 'next';
-                    const isCompleted = item.statusType === 'completed';
+            {/* Appointments Table or Empty State */}
+            {appointments.length === 0 ? (
+              <div className="py-14 flex flex-col items-center justify-center text-center space-y-2.5">
+                <div className="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/25 flex items-center justify-center text-teal-400 shadow-[0_0_15px_rgba(45,212,191,0.15)]">
+                  <Calendar className="w-6 h-6" />
+                </div>
+                <p className="text-sm font-semibold text-white">No Consultations Scheduled</p>
+                <p className="text-xs text-slate-400 max-w-sm">
+                  You haven't scheduled an appointment with any hospital specialist. Consult with our physical therapists or spine specialists.
+                </p>
+                <button
+                  onClick={() => onNavigate('consultants')}
+                  className="mt-2 px-4 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition"
+                >
+                  Book Specialist Consultation
+                </button>
+              </div>
+            ) : (
+              <div className="overflow-x-auto mt-2">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="text-slate-400 text-[11px] font-medium border-b border-slate-800/50">
+                      <th className="py-2.5 font-normal">Specialist</th>
+                      <th className="py-2.5 font-normal">Time</th>
+                      <th className="py-2.5 font-normal">Session Type</th>
+                      <th className="py-2.5 text-right font-normal">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/40 font-medium">
+                    {appointments.map((item) => {
+                      const timeStr = item.appointment_time
+                        ? new Date(item.appointment_time).toLocaleDateString('en-IN', {
+                            day: 'numeric',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })
+                        : 'Scheduled';
+                      const isConfirmed = item.status === 'confirmed';
+                      const isWaiting = item.status === 'waiting';
 
-                    return (
-                      <tr key={item.id} className="hover:bg-slate-800/30 transition group">
-                        <td className="py-3 text-white font-semibold flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-teal-500/20 border border-teal-500/30 text-teal-300 text-[10px] flex items-center justify-center font-bold">
-                            DR
-                          </div>
-                          <span>{item.provider}</span>
-                        </td>
-                        <td className="py-3 text-slate-300 font-mono text-[11px]">{item.time}</td>
-                        <td className="py-3 text-slate-400 text-[11px]">{item.type}</td>
-                        <td className="py-3 text-right">
-                          <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
-                              isInClinic
-                                ? 'bg-teal-500/15 text-teal-300 border border-teal-500/40 shadow-[0_0_8px_rgba(45,212,191,0.2)]'
-                                : isNext
-                                ? 'bg-amber-500/15 text-amber-300 border border-amber-500/35'
-                                : 'bg-slate-800/80 text-emerald-400 border border-emerald-500/25'
-                            }`}
-                          >
+                      return (
+                        <tr key={item.id} className="hover:bg-slate-800/30 transition group">
+                          <td className="py-3 text-white font-semibold flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-teal-500/20 border border-teal-500/30 text-teal-300 text-[10px] flex items-center justify-center font-bold">
+                              DR
+                            </div>
+                            <span>{item.provider_name}</span>
+                          </td>
+                          <td className="py-3 text-slate-300 font-mono text-[11px]">{timeStr}</td>
+                          <td className="py-3 text-slate-400 text-[11px] capitalize">
+                            {(item.consultation_type || 'Telehealth').replace('_', ' ')}
+                          </td>
+                          <td className="py-3 text-right">
                             <span
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                isInClinic
-                                  ? 'bg-teal-400 animate-pulse'
-                                  : isNext
-                                  ? 'bg-amber-400'
-                                  : 'bg-emerald-400'
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                                isConfirmed
+                                  ? 'bg-teal-500/15 text-teal-300 border border-teal-500/40 shadow-[0_0_8px_rgba(45,212,191,0.2)]'
+                                  : isWaiting
+                                  ? 'bg-amber-500/15 text-amber-300 border border-amber-500/35'
+                                  : 'bg-slate-800/80 text-emerald-400 border border-emerald-500/25'
                               }`}
-                            />
-                            <span>{item.status}</span>
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                            >
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full ${
+                                  isConfirmed
+                                    ? 'bg-teal-400 animate-pulse'
+                                    : isWaiting
+                                    ? 'bg-amber-400'
+                                    : 'bg-emerald-400'
+                                }`}
+                              />
+                              <span className="capitalize">{item.status}</span>
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400 font-mono">
@@ -295,31 +302,55 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
               </svg>
             </div>
 
-            {/* CALLOUT PILLS */}
-            <div className="absolute top-2 left-1 sm:left-2 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#091a2c]/85 border border-teal-500/35 backdrop-blur-md shadow-lg text-[11px] font-semibold text-slate-200">
-              <span className="text-slate-400 block text-[10px]">Shoulder Tilt:</span>
-              <span className="text-teal-300 font-bold font-mono">0.8°</span>
-            </div>
+            {/* Overlays / Callout Pills */}
+            {assessments.length === 0 ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-[#0c1f35]/90 backdrop-blur-sm z-10 space-y-2.5">
+                <div className="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/25 flex items-center justify-center text-teal-400 shadow-[0_0_15px_rgba(45,212,191,0.15)]">
+                  <Camera className="w-6 h-6" />
+                </div>
+                <p className="text-sm font-semibold text-white">No Posture Scan Recorded Yet</p>
+                <p className="text-xs text-slate-400 max-w-xs">
+                  Complete your first 60-second webcam AI biomechanical scan to evaluate spinal symmetry and joint alignment.
+                </p>
+                <button
+                  onClick={() => onNavigate('assessment')}
+                  className="mt-1 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-400 text-slate-950 font-bold text-xs shadow-md shadow-cyan-500/20 hover:brightness-110 transition"
+                >
+                  Start Posture Scan
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="absolute top-2 left-1 sm:left-2 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#091a2c]/85 border border-teal-500/35 backdrop-blur-md shadow-lg text-[11px] font-semibold text-slate-200">
+                  <span className="text-slate-400 block text-[10px]">Shoulder Tilt:</span>
+                  <span className="text-teal-300 font-bold font-mono">{shoulderTiltVal}</span>
+                </div>
 
-            <div className="absolute top-[40%] left-0 sm:left-2 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#091a2c]/85 border border-teal-500/35 backdrop-blur-md shadow-lg text-[11px] font-semibold text-slate-200">
-              <span className="text-slate-400 block text-[10px]">Symmetry:</span>
-              <span className="text-teal-300 font-bold font-mono">94%</span>
-            </div>
+                <div className="absolute top-[40%] left-0 sm:left-2 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#091a2c]/85 border border-teal-500/35 backdrop-blur-md shadow-lg text-[11px] font-semibold text-slate-200">
+                  <span className="text-slate-400 block text-[10px]">Symmetry:</span>
+                  <span className="text-teal-300 font-bold font-mono">{symmetryVal}</span>
+                </div>
 
-            <div className="absolute bottom-2 left-1 sm:left-2 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#091a2c]/85 border border-teal-500/35 backdrop-blur-md shadow-lg text-[11px] font-semibold text-slate-200">
-              <span className="text-slate-400 block text-[10px]">Spine Alignment:</span>
-              <span className="text-emerald-400 font-bold">Optimal</span>
-            </div>
+                <div className="absolute bottom-2 left-1 sm:left-2 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#091a2c]/85 border border-teal-500/35 backdrop-blur-md shadow-lg text-[11px] font-semibold text-slate-200">
+                  <span className="text-slate-400 block text-[10px]">Spine Alignment:</span>
+                  <span className="text-emerald-400 font-bold">{alignmentStatus}</span>
+                </div>
 
-            <div className="absolute top-2 right-1 sm:right-2 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#091a2c]/85 border border-teal-500/35 backdrop-blur-md shadow-lg text-[11px] font-semibold text-slate-200">
-              <span className="text-slate-400 block text-[10px]">Shoulder Tilt:</span>
-              <span className="text-teal-300 font-bold font-mono">0.8°</span>
-            </div>
+                <div className="absolute top-2 right-1 sm:right-2 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#091a2c]/85 border border-teal-500/35 backdrop-blur-md shadow-lg text-[11px] font-semibold text-slate-200">
+                  <span className="text-slate-400 block text-[10px]">Cervical Tilt:</span>
+                  <span className="text-teal-300 font-bold font-mono">
+                    {movement?.head_tilt_deg ? `${Math.abs(movement.head_tilt_deg).toFixed(1)}°` : shoulderTiltVal}
+                  </span>
+                </div>
 
-            <div className="absolute top-[40%] right-0 sm:right-2 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#091a2c]/85 border border-teal-500/35 backdrop-blur-md shadow-lg text-[11px] font-semibold text-slate-200">
-              <span className="text-slate-400 block text-[10px]">Spine Alignment:</span>
-              <span className="text-teal-300 font-bold font-mono">100%</span>
-            </div>
+                <div className="absolute top-[40%] right-0 sm:right-2 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#091a2c]/85 border border-teal-500/35 backdrop-blur-md shadow-lg text-[11px] font-semibold text-slate-200">
+                  <span className="text-slate-400 block text-[10px]">Pelvic Torsion:</span>
+                  <span className="text-teal-300 font-bold font-mono">
+                    {movement?.hip_alignment_deg ? `${Math.abs(movement.hip_alignment_deg).toFixed(1)}°` : '0.5°'}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between">
@@ -329,7 +360,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
               className="px-3 py-1 rounded-full bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/40 text-xs font-semibold transition flex items-center gap-1.5"
             >
               <Camera className="w-3.5 h-3.5" />
-              <span>Start Posture Scan</span>
+              <span>{assessments.length === 0 ? 'Start Posture Scan' : 'Scan Again'}</span>
             </button>
           </div>
         </div>
@@ -344,110 +375,140 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
               <h2 className="text-base font-bold text-white tracking-tight">
                 My Recovery Progress
               </h2>
-              <span className="text-xs text-teal-300 font-mono font-semibold">+18% Flexion</span>
+              <span className="text-xs text-teal-300 font-mono font-semibold">
+                {assessments.length > 0 ? '+18% Flexion' : 'Tracking Pending'}
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mt-4">
-              {/* Left Wave Chart */}
-              <div className="md:col-span-6 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-200">Healing Velocity</span>
-                  <div className="flex items-center gap-3 text-[10px] font-semibold">
-                    <span className="flex items-center gap-1 text-cyan-400">
-                      <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                      Healing
-                    </span>
-                    <span className="flex items-center gap-1 text-teal-400">
-                      <span className="w-2 h-2 rounded-full bg-teal-400" />
-                      Motion
-                    </span>
+            {assessments.length === 0 ? (
+              <div className="py-14 flex flex-col items-center justify-center text-center space-y-2.5">
+                <div className="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/25 flex items-center justify-center text-teal-400 shadow-[0_0_15px_rgba(45,212,191,0.15)]">
+                  <TrendingUp className="w-6 h-6" />
+                </div>
+                <p className="text-sm font-semibold text-white">No Recovery Metrics Recorded Yet</p>
+                <p className="text-xs text-slate-400 max-w-sm">
+                  Daily biomechanical scans and prescribed exercises will generate your real-time healing velocity and range-of-motion telemetry.
+                </p>
+                <button
+                  onClick={() => onNavigate('assessment')}
+                  className="mt-1 px-4 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition"
+                >
+                  Record First Assessment
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mt-4">
+                {/* Left Wave Chart */}
+                <div className="md:col-span-6 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-200">Healing Velocity</span>
+                    <div className="flex items-center gap-3 text-[10px] font-semibold">
+                      <span className="flex items-center gap-1 text-cyan-400">
+                        <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                        Healing
+                      </span>
+                      <span className="flex items-center gap-1 text-teal-400">
+                        <span className="w-2 h-2 rounded-full bg-teal-400" />
+                        Motion
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="h-44 w-full relative flex items-center">
+                    <svg className="w-full h-full overflow-visible" viewBox="0 0 260 140">
+                      <defs>
+                        <linearGradient id="pHealingGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.45" />
+                          <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.0" />
+                        </linearGradient>
+                        <linearGradient id="pMotionGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#2dd4bf" stopOpacity="0.3" />
+                          <stop offset="100%" stopColor="#2dd4bf" stopOpacity="0.0" />
+                        </linearGradient>
+                      </defs>
+
+                      {[15, 45, 75, 105, 130].map((y, idx) => (
+                        <line key={idx} x1="24" y1={y} x2="260" y2={y} stroke="#1e293b" strokeDasharray="2 3" />
+                      ))}
+
+                      <path
+                        d="M 28 130 Q 70 120, 100 80 T 170 65 T 230 45 L 255 35 L 255 130 Z"
+                        fill="url(#pMotionGrad)"
+                      />
+                      <path
+                        d="M 28 130 Q 60 100, 100 90 T 160 70 T 210 50 L 255 20 L 255 130 Z"
+                        fill="url(#pHealingGrad)"
+                      />
+                      <path
+                        d="M 28 130 Q 70 120, 100 80 T 170 65 T 230 45 L 255 35"
+                        fill="none"
+                        stroke="#2dd4bf"
+                        strokeWidth="2.2"
+                      />
+                      <path
+                        d="M 28 130 Q 60 100, 100 90 T 160 70 T 210 50 L 255 20"
+                        fill="none"
+                        stroke="#22d3ee"
+                        strokeWidth="2.5"
+                      />
+                    </svg>
+                  </div>
+
+                  <div className="flex justify-between pl-6 text-[9px] text-slate-500 font-mono">
+                    <span>Jan</span>
+                    <span>Feb</span>
+                    <span>Mar</span>
+                    <span>Apr</span>
+                    <span>May</span>
+                    <span>Jun</span>
+                    <span>July</span>
                   </div>
                 </div>
 
-                <div className="h-44 w-full relative flex items-center">
-                  <svg className="w-full h-full overflow-visible" viewBox="0 0 260 140">
-                    <defs>
-                      <linearGradient id="pHealingGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.45" />
-                        <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.0" />
-                      </linearGradient>
-                      <linearGradient id="pMotionGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#2dd4bf" stopOpacity="0.3" />
-                        <stop offset="100%" stopColor="#2dd4bf" stopOpacity="0.0" />
-                      </linearGradient>
-                    </defs>
-
-                    {[15, 45, 75, 105, 130].map((y, idx) => (
-                      <line key={idx} x1="24" y1={y} x2="260" y2={y} stroke="#1e293b" strokeDasharray="2 3" />
-                    ))}
-
-                    <path
-                      d="M 28 130 Q 70 120, 100 80 T 170 65 T 230 45 L 255 35 L 255 130 Z"
-                      fill="url(#pMotionGrad)"
-                    />
-                    <path
-                      d="M 28 130 Q 60 100, 100 90 T 160 70 T 210 50 L 255 20 L 255 130 Z"
-                      fill="url(#pHealingGrad)"
-                    />
-                    <path
-                      d="M 28 130 Q 70 120, 100 80 T 170 65 T 230 45 L 255 35"
-                      fill="none"
-                      stroke="#2dd4bf"
-                      strokeWidth="2.2"
-                    />
-                    <path
-                      d="M 28 130 Q 60 100, 100 90 T 160 70 T 210 50 L 255 20"
-                      fill="none"
-                      stroke="#22d3ee"
-                      strokeWidth="2.5"
-                    />
-                  </svg>
-                </div>
-
-                <div className="flex justify-between pl-6 text-[9px] text-slate-500 font-mono">
-                  <span>Jan</span>
-                  <span>Feb</span>
-                  <span>Mar</span>
-                  <span>Apr</span>
-                  <span>May</span>
-                  <span>Jun</span>
-                  <span>July</span>
-                </div>
-              </div>
-
-              {/* Right ROM Bars */}
-              <div className="md:col-span-6 space-y-2 border-t md:border-t-0 md:border-l border-slate-800/80 md:pl-6 pt-3 md:pt-0">
-                <span className="text-xs font-bold text-slate-200">Range-of-Motion Consistency</span>
-                <div className="h-44 w-full relative flex items-end justify-between pl-6 pr-2 pb-1">
-                  {[
-                    { month: 'Jan', h1: 45, h2: 70 },
-                    { month: 'Feb', h1: 65, h2: 85 },
-                    { month: 'Mar', h1: 80, h2: 105 },
-                    { month: 'Apr', h1: 75, h2: 115 },
-                    { month: 'May', h1: 95, h2: 130 },
-                    { month: 'Jun', h1: 110, h2: 145 },
-                  ].map((bar, idx) => (
-                    <div key={idx} className="flex flex-col items-center gap-1.5 h-full justify-end">
-                      <div className="flex items-end gap-1 h-36">
-                        <div
-                          className="w-2 rounded-t bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.3)]"
-                          style={{ height: `${(bar.h1 / 150) * 100}%` }}
-                        />
-                        <div
-                          className="w-2 rounded-t bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.3)]"
-                          style={{ height: `${(bar.h2 / 150) * 100}%` }}
-                        />
+                {/* Right ROM Bars */}
+                <div className="md:col-span-6 space-y-2 border-t md:border-t-0 md:border-l border-slate-800/80 md:pl-6 pt-3 md:pt-0">
+                  <span className="text-xs font-bold text-slate-200">Range-of-Motion Consistency</span>
+                  <div className="h-44 w-full relative flex items-end justify-between pl-6 pr-2 pb-1">
+                    {[
+                      { month: 'Jan', h1: 45, h2: 70 },
+                      { month: 'Feb', h1: 65, h2: 85 },
+                      { month: 'Mar', h1: 80, h2: 105 },
+                      { month: 'Apr', h1: 75, h2: 115 },
+                      { month: 'May', h1: 95, h2: 130 },
+                      { month: 'Jun', h1: 110, h2: 145 },
+                    ].map((bar, idx) => (
+                      <div key={idx} className="flex flex-col items-center gap-1.5 h-full justify-end">
+                        <div className="flex items-end gap-1 h-36">
+                          <div
+                            className="w-2 rounded-t bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.3)]"
+                            style={{ height: `${(bar.h1 / 150) * 100}%` }}
+                          />
+                          <div
+                            className="w-2 rounded-t bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.3)]"
+                            style={{ height: `${(bar.h2 / 150) * 100}%` }}
+                          />
+                        </div>
+                        <span className="text-[9px] text-slate-500 font-mono">{bar.month}</span>
                       </div>
-                      <span className="text-[9px] text-slate-500 font-mono">{bar.month}</span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="pt-2 border-t border-slate-800/60 text-[11px] text-slate-400 font-mono">
-            Exercise Compliance: <strong>88%</strong> • Assigned by Dr. Rajesh Sharma
+            {appointments.length > 0 ? (
+              <>
+                Exercise Compliance: <strong>{completionPercentage}%</strong> • Assigned by {appointments[0].provider_name}
+              </>
+            ) : assessments.length > 0 ? (
+              <>
+                Exercise Compliance: <strong>{completionPercentage}%</strong> • MetroHealth 3-Day Digital Regimen
+              </>
+            ) : (
+              'Status: New Patient Record • Zero Consultations or Scans'
+            )}
           </div>
         </div>
 
@@ -474,12 +535,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                       stroke="#22d3ee"
                       strokeWidth="8"
                       strokeDasharray={251.2}
-                      strokeDashoffset={251.2 * (1 - 0.3)}
+                      strokeDashoffset={251.2 * (1 - (assessments.length > 0 ? Math.min(exercisesDoneCount / totalExercises, 1) : 0))}
                       strokeLinecap="round"
                       className="shadow-[0_0_12px_#22d3ee]"
                     />
                   </svg>
-                  <span className="absolute font-black text-xl text-white font-mono">30%</span>
+                  <span className="absolute font-black text-xl text-white font-mono">
+                    {assessments.length > 0 ? `${completionPercentage}%` : '0%'}
+                  </span>
                 </div>
                 <span className="text-xs font-semibold text-slate-300">Movings</span>
               </div>
@@ -497,12 +560,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                       stroke="#2dd4bf"
                       strokeWidth="8"
                       strokeDasharray={251.2}
-                      strokeDashoffset={251.2 * (1 - 0.9)}
+                      strokeDashoffset={251.2 * (1 - (assessments.length > 0 ? (completionPercentage > 0 ? completionPercentage / 100 : 0.1) : 0))}
                       strokeLinecap="round"
                       className="shadow-[0_0_15px_#2dd4bf]"
                     />
                   </svg>
-                  <span className="absolute font-black text-xl text-white font-mono">90%</span>
+                  <span className="absolute font-black text-xl text-white font-mono">
+                    {assessments.length > 0 ? `${Math.max(completionPercentage, 10)}%` : '0%'}
+                  </span>
                 </div>
                 <span className="text-xs font-semibold text-teal-300">Progress</span>
               </div>

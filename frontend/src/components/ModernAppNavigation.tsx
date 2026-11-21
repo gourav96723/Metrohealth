@@ -161,12 +161,12 @@ export const ModernAppNavigation: React.FC<ModernAppNavigationProps> = ({
                     <span className="text-[10px] text-teal-400 font-mono">Live</span>
                   </div>
                   <div className="p-2 rounded-xl bg-[#071322] border border-slate-800 text-slate-300 space-y-0.5">
-                    <p className="font-semibold text-white">OPD Patient Waiting</p>
-                    <p className="text-[10px] text-slate-400">Neha Gupta checked in for posture review.</p>
+                    <p className="font-semibold text-white">Clinical OPD System</p>
+                    <p className="text-[10px] text-slate-400">Connected to MetroHealth Super Speciality Hospital.</p>
                   </div>
                   <div className="p-2 rounded-xl bg-[#071322] border border-slate-800 text-slate-300 space-y-0.5">
-                    <p className="font-semibold text-white">Rehab Progress Update</p>
-                    <p className="text-[10px] text-slate-400">Aarav S. completed Day 2 mobility set.</p>
+                    <p className="font-semibold text-white">AI Vision Engine</p>
+                    <p className="text-[10px] text-slate-400">MediaPipe Biomechanical Model loaded and active.</p>
                   </div>
                 </div>
               )}

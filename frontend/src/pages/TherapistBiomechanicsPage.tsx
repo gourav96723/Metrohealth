@@ -42,8 +42,25 @@ export const TherapistBiomechanicsPage: React.FC = () => {
   const { user } = useAuth();
 
   // Patient & Clinical Context
-  const [selectedPatientName, setSelectedPatientName] = useState('Neha Gupta');
+  const [patients, setPatients] = useState<any[]>([]);
+  const [selectedPatientName, setSelectedPatientName] = useState('');
   const [targetArea, setTargetArea] = useState('lower_back');
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const data = await api.getTherapistPatients();
+        setPatients(data || []);
+        if (data && data.length > 0) {
+          setSelectedPatientName(data[0].full_name);
+        }
+      } catch (err) {
+        console.error('Failed to load doctor patients:', err);
+        setPatients([]);
+      }
+    };
+    fetchPatients();
+  }, []);
 
   // Camera & Assessment Mode
   const [viewMode, setViewMode] = useState<'camera' | 'archive'>('camera');
@@ -321,10 +338,15 @@ export const TherapistBiomechanicsPage: React.FC = () => {
                   onChange={(e) => setSelectedPatientName(e.target.value)}
                   className="px-3 py-1.5 rounded-xl bg-[#070e1a] border border-slate-700 text-white font-bold outline-none"
                 >
-                  <option value="Neha Gupta">Neha Gupta (34y, F) • Lumbar Strain</option>
-                  <option value="Aarav Sharma">Aarav Sharma (28y, M) • Cervical Spine</option>
-                  <option value="Vikram Malhotra">Vikram Malhotra (45y, M) • Knee Tracking</option>
-                  <option value="Rohan Verma">Rohan Verma (52y, M) • Rotator Cuff</option>
+                  {patients.length === 0 ? (
+                    <option value="">No registered patients under your care</option>
+                  ) : (
+                    patients.map((p) => (
+                      <option key={p.id} value={p.full_name}>
+                        {p.full_name} ({p.age}y, {p.gender}) • {p.primary_condition}
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
 
@@ -596,22 +618,30 @@ export const TherapistBiomechanicsPage: React.FC = () => {
         </div>
       ) : (
         /* Saved Dossiers Archive */
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { name: 'Neha Gupta', date: 'Today, 09:15 AM', score: '64%', concern: 'Lumbar-Pelvic Asymmetry (9.4° tilt)' },
-            { name: 'Aarav Sharma', date: 'Yesterday, 04:15 PM', score: '78%', concern: 'Cervical Spine Stiffness (14.8° forward)' },
-            { name: 'Rohan Verma', date: 'Today, 08:45 AM', score: '69%', concern: 'Right Shoulder Impingement (8.4° tilt)' },
-          ].map((item, idx) => (
-            <div key={idx} className="p-4 rounded-2xl bg-[#0b1626] border border-slate-800 space-y-2">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-white">{item.name}</h4>
-                <span className="text-[10px] text-cyan-300 font-mono font-bold">{item.score}</span>
-              </div>
-              <p className="text-xs text-slate-300">{item.concern}</p>
-              <p className="text-[10px] text-slate-500 font-mono">Scan: {item.date}</p>
+        patients.length === 0 ? (
+          <div className="py-16 p-8 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl flex flex-col items-center justify-center text-center space-y-3">
+            <div className="w-14 h-14 rounded-2xl bg-teal-500/10 border border-teal-500/25 flex items-center justify-center text-teal-400">
+              <Camera className="w-7 h-7" />
             </div>
-          ))}
-        </div>
+            <h3 className="text-base font-bold text-white">No Biomechanical Scan Archives</h3>
+            <p className="text-xs text-slate-400 max-w-md">
+              Posture scans and evaluated joint angles recorded for patients scheduled under your care will be archived here.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {patients.map((item, idx) => (
+              <div key={idx} className="p-4 rounded-2xl bg-[#0b1626] border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-white">{item.full_name}</h4>
+                  <span className="text-[10px] text-cyan-300 font-mono font-bold">{item.posture_score}%</span>
+                </div>
+                <p className="text-xs text-slate-300">{item.primary_condition}</p>
+                <p className="text-[10px] text-slate-500 font-mono">Tilt: {item.shoulder_alignment_deg}°</p>
+              </div>
+            ))}
+          </div>
+        )
       )}
     </div>
   );
