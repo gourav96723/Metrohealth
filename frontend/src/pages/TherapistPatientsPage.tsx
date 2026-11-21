@@ -126,8 +126,19 @@ export const TherapistPatientsPage: React.FC<TherapistPatientsPageProps> = ({ on
         </div>
       </div>
 
-      {/* Patients Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/* Patients Grid or Empty State */}
+      {filteredPatients.length === 0 ? (
+        <div className="py-20 p-8 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl flex flex-col items-center justify-center text-center space-y-3">
+          <div className="w-14 h-14 rounded-2xl bg-teal-500/10 border border-teal-500/25 flex items-center justify-center text-teal-400 shadow-[0_0_20px_rgba(45,212,191,0.15)]">
+            <Users className="w-7 h-7" />
+          </div>
+          <h3 className="text-base font-bold text-white">No Patient Records Under Your Care</h3>
+          <p className="text-xs text-slate-400 max-w-md">
+            Only patients who book an active consultation with your clinical schedule will appear in your EMR dossiers. New bookings will automatically populate here.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredPatients.map((patient) => (
           <div
             key={patient.id}
@@ -239,6 +250,7 @@ export const TherapistPatientsPage: React.FC<TherapistPatientsPageProps> = ({ on
           </div>
         ))}
       </div>
+      )}
 
       {/* ================= PATIENT EMR DOSSIER MODAL ================= */}
       {selectedPatient && (

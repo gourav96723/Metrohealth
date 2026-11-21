@@ -29,41 +29,33 @@ export const TherapistDashboardPage: React.FC<TherapistDashboardPageProps> = ({ 
   const [actionDropdownOpen, setActionDropdownOpen] = useState(false);
   const [selectedRowMenu, setSelectedRowMenu] = useState<string | null>(null);
 
-  // Default appointments matching reference layout with realistic clinical records
-  const defaultAppointments = [
-    { id: '1', name: 'Rahul S.', time: '09:00 PM', status: 'In Clinic', statusType: 'in_clinic', complaint: 'Lumbar-pelvic strain', avatar: 'RS' },
-    { id: '2', name: 'Anita K.', time: '09:00 PM', status: 'Next', statusType: 'next', complaint: 'Cervical stiffness', avatar: 'AK' },
-    { id: '3', name: 'Shiamm R.', time: '10:00 AM', status: 'Next', statusType: 'next', complaint: 'Patellar tracking', avatar: 'SR' },
-    { id: '4', name: 'Anita K.', time: '12:30 PM', status: 'Completed', statusType: 'completed', complaint: 'Post-op mobility', avatar: 'AK' },
-    { id: '5', name: 'Vubon S.', time: '12:30 PM', status: 'Completed', statusType: 'completed', complaint: 'Rotator cuff check', avatar: 'VS' },
-    { id: '6', name: 'Makiul R.', time: '12:30 PM', status: 'Completed', statusType: 'completed', complaint: 'Achilles rehab', avatar: 'MR' },
-  ];
-
-  const [appointments, setAppointments] = useState(defaultAppointments);
+  const [appointments, setAppointments] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const queueData = await api.getTherapistQueue();
         if (queueData && queueData.length > 0) {
-          // Merge API queue with reference structure
           const mapped = queueData.map((q: any, i: number) => ({
-            id: String(i + 1),
+            id: String(q.id || i + 1),
             name: q.patient_name || `Patient ${i + 1}`,
             time: q.time_slot || '10:00 AM',
-            status: q.status === 'in_consultation' ? 'In Clinic' : q.status === 'waiting' ? 'Next' : 'Completed',
-            statusType: q.status === 'in_consultation' ? 'in_clinic' : q.status === 'waiting' ? 'next' : 'completed',
+            status: q.status === 'in_consultation' ? 'In Clinic' : q.status === 'completed' ? 'Completed' : 'Next',
+            statusType: q.status === 'in_consultation' ? 'in_clinic' : q.status === 'completed' ? 'completed' : 'next',
             complaint: q.chief_complaint,
             avatar: (q.patient_name || 'PT')
               .split(' ')
               .map((w: string) => w[0])
               .join('')
-              .slice(0, 2),
+              .slice(0, 2)
+              .toUpperCase(),
           }));
-          setAppointments(mapped.slice(0, 6));
+          setAppointments(mapped);
+        } else {
+          setAppointments([]);
         }
       } catch (err) {
-        console.warn('Using clinical demonstration appointment set:', err);
+        setAppointments([]);
       } finally {
         setLoading(false);
       }
@@ -127,106 +119,118 @@ export const TherapistDashboardPage: React.FC<TherapistDashboardPageProps> = ({ 
               </div>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto mt-2">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="text-slate-400 text-[11px] font-medium border-b border-slate-800/50">
-                    <th className="py-2.5 font-normal">Patient Name</th>
-                    <th className="py-2.5 font-normal">Appointment</th>
-                    <th className="py-2.5 font-normal">Status</th>
-                    <th className="py-2.5 text-right font-normal"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/40 font-medium">
-                  {appointments.map((patient) => {
-                    const isInClinic = patient.statusType === 'in_clinic';
-                    const isNext = patient.statusType === 'next';
-                    const isCompleted = patient.statusType === 'completed';
+            {/* Table or Empty State */}
+            {appointments.length === 0 ? (
+              <div className="py-14 flex flex-col items-center justify-center text-center space-y-2.5">
+                <div className="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/25 flex items-center justify-center text-teal-400 shadow-[0_0_15px_rgba(45,212,191,0.15)]">
+                  <Calendar className="w-6 h-6" />
+                </div>
+                <p className="text-sm font-semibold text-white">No OPD Appointments Booked Yet</p>
+                <p className="text-xs text-slate-400 max-w-sm">
+                  Real-time patient bookings for <span className="text-teal-300 font-semibold">{user?.full_name || 'Dr. Rajesh Kumar Sharma'}</span> will automatically appear here once scheduled.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto mt-2">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="text-slate-400 text-[11px] font-medium border-b border-slate-800/50">
+                      <th className="py-2.5 font-normal">Patient Name</th>
+                      <th className="py-2.5 font-normal">Appointment</th>
+                      <th className="py-2.5 font-normal">Status</th>
+                      <th className="py-2.5 text-right font-normal"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/40 font-medium">
+                    {appointments.map((patient) => {
+                      const isInClinic = patient.statusType === 'in_clinic';
+                      const isNext = patient.statusType === 'next';
+                      const isCompleted = patient.statusType === 'completed';
 
-                    return (
-                      <tr key={patient.id} className="hover:bg-slate-800/30 transition group">
-                        {/* Name with Avatar */}
-                        <td className="py-3 pr-3">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-teal-500/40 to-cyan-500/30 border border-teal-400/30 text-teal-200 text-[10px] font-bold flex items-center justify-center flex-shrink-0">
-                              {patient.avatar}
+                      return (
+                        <tr key={patient.id} className="hover:bg-slate-800/30 transition group">
+                          {/* Name with Avatar */}
+                          <td className="py-3 pr-3">
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-teal-500/40 to-cyan-500/30 border border-teal-400/30 text-teal-200 text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                                {patient.avatar}
+                              </div>
+                              <span className="font-semibold text-white group-hover:text-teal-300 transition">
+                                {patient.name}
+                              </span>
                             </div>
-                            <span className="font-semibold text-white group-hover:text-teal-300 transition">
-                              {patient.name}
-                            </span>
-                          </div>
-                        </td>
+                          </td>
 
-                        {/* Appointment Time */}
-                        <td className="py-3 text-slate-300 font-mono text-[11px]">
-                          {patient.time}
-                        </td>
+                          {/* Appointment Time */}
+                          <td className="py-3 text-slate-300 font-mono text-[11px]">
+                            {patient.time}
+                          </td>
 
-                        {/* Status Pill */}
-                        <td className="py-3">
-                          <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
-                              isInClinic
-                                ? 'bg-teal-500/15 text-teal-300 border border-teal-500/40 shadow-[0_0_8px_rgba(45,212,191,0.2)]'
-                                : isNext
-                                ? 'bg-amber-500/15 text-amber-300 border border-amber-500/35'
-                                : 'bg-slate-800/80 text-emerald-400 border border-emerald-500/25'
-                            }`}
-                          >
+                          {/* Status Pill */}
+                          <td className="py-3">
                             <span
-                              className={`w-1.5 h-1.5 rounded-full ${
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
                                 isInClinic
-                                  ? 'bg-teal-400 animate-pulse'
+                                  ? 'bg-teal-500/15 text-teal-300 border border-teal-500/40 shadow-[0_0_8px_rgba(45,212,191,0.2)]'
                                   : isNext
-                                  ? 'bg-amber-400'
-                                  : 'bg-emerald-400'
+                                  ? 'bg-amber-500/15 text-amber-300 border border-amber-500/35'
+                                  : 'bg-slate-800/80 text-emerald-400 border border-emerald-500/25'
                               }`}
-                            />
-                            <span>{patient.status}</span>
-                          </span>
-                        </td>
+                            >
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full ${
+                                  isInClinic
+                                    ? 'bg-teal-400 animate-pulse'
+                                    : isNext
+                                    ? 'bg-amber-400'
+                                    : 'bg-emerald-400'
+                                }`}
+                              />
+                              <span>{patient.status}</span>
+                            </span>
+                          </td>
 
-                        {/* Row Action Menu */}
-                        <td className="py-3 text-right relative">
-                          <button
-                            onClick={() =>
-                              setSelectedRowMenu(selectedRowMenu === patient.id ? null : patient.id)
-                            }
-                            className="p-1 text-slate-400 hover:text-white rounded-md hover:bg-slate-800 transition"
-                          >
-                            <MoreVertical className="w-3.5 h-3.5" />
-                          </button>
+                          {/* Row Action Menu */}
+                          <td className="py-3 text-right relative">
+                            <button
+                              onClick={() =>
+                                setSelectedRowMenu(selectedRowMenu === patient.id ? null : patient.id)
+                              }
+                              className="p-1 text-slate-400 hover:text-white rounded-md hover:bg-slate-800 transition"
+                            >
+                              <MoreVertical className="w-3.5 h-3.5" />
+                            </button>
 
-                          {selectedRowMenu === patient.id && (
-                            <div className="absolute right-0 mt-1 w-36 p-1 bg-[#0a1829] border border-teal-500/30 rounded-xl shadow-2xl z-30 text-xs space-y-0.5 text-left">
-                              <button
-                                onClick={() => handleUpdateStatus(patient.id, 'In Clinic', 'in_clinic')}
-                                className="w-full px-2.5 py-1.5 rounded-lg text-teal-300 hover:bg-teal-950/40 transition"
-                              >
-                                Call Patient
-                              </button>
-                              <button
-                                onClick={() => handleUpdateStatus(patient.id, 'Completed', 'completed')}
-                                className="w-full px-2.5 py-1.5 rounded-lg text-emerald-300 hover:bg-emerald-950/40 transition"
-                              >
-                                Mark Completed
-                              </button>
-                              <button
-                                onClick={() => onNavigate('therapist-biomechanics')}
-                                className="w-full px-2.5 py-1.5 rounded-lg text-slate-300 hover:bg-slate-800 transition"
-                              >
-                                Biomechanics Scan
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                            {selectedRowMenu === patient.id && (
+                              <div className="absolute right-0 mt-1 w-36 p-1 bg-[#0a1829] border border-teal-500/30 rounded-xl shadow-2xl z-30 text-xs space-y-0.5 text-left">
+                                <button
+                                  onClick={() => handleUpdateStatus(patient.id, 'In Clinic', 'in_clinic')}
+                                  className="w-full px-2.5 py-1.5 rounded-lg text-teal-300 hover:bg-teal-950/40 transition"
+                                >
+                                  Call Patient
+                                </button>
+                                <button
+                                  onClick={() => handleUpdateStatus(patient.id, 'Completed', 'completed')}
+                                  className="w-full px-2.5 py-1.5 rounded-lg text-emerald-300 hover:bg-emerald-950/40 transition"
+                                >
+                                  Mark Completed
+                                </button>
+                                <button
+                                  onClick={() => onNavigate('therapist-biomechanics')}
+                                  className="w-full px-2.5 py-1.5 rounded-lg text-slate-300 hover:bg-slate-800 transition"
+                                >
+                                  Biomechanics Scan
+                                </button>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           {/* Quick Footer Action */}

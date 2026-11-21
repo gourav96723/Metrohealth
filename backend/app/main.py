@@ -42,30 +42,78 @@ def auto_init_db():
 
         db = SessionLocal()
         try:
-            if not db.query(User).filter(User.email == "dr.rajesh@metrohealth.ai").first():
+            doctors = [
+                {
+                    "email": "dr.rajesh@metrohealth.ai",
+                    "password": "Doctor2026!",
+                    "full_name": "Dr. Rajesh Kumar Sharma",
+                    "specialization": "Senior Orthopaedic & Sports Physiotherapy Specialist",
+                    "license_number": "MCI-84729-D",
+                    "clinic_hospital": "MetroHealth Super Speciality Hospital, New Delhi",
+                    "experience_years": 16,
+                    "phone_number": "+91 96537 66889"
+                },
+                {
+                    "email": "dr.rashmi@metrohealth.ai",
+                    "password": "Doctor2026!",
+                    "full_name": "Dr. Rashmi Sharma",
+                    "specialization": "Chief Spine Rehabilitation & Posture Specialist",
+                    "license_number": "DPT-99412-M",
+                    "clinic_hospital": "MetroHealth Super Speciality Hospital, New Delhi",
+                    "experience_years": 14,
+                    "phone_number": "+91 98112 34567"
+                },
+                {
+                    "email": "dr.ganpat@metrohealth.ai",
+                    "password": "Doctor2026!",
+                    "full_name": "Dr. Ganpat Yadav",
+                    "specialization": "Consultant Joint Mobility & Musculoskeletal Rehab",
+                    "license_number": "MCI-55214-G",
+                    "clinic_hospital": "MetroHealth Super Speciality Hospital, New Delhi",
+                    "experience_years": 12,
+                    "phone_number": "+91 99201 88341"
+                }
+            ]
+
+            for doc_info in doctors:
+                doc = db.query(User).filter(User.email == doc_info["email"]).first()
+                if not doc:
+                    db.add(User(
+                        email=doc_info["email"],
+                        hashed_password=hash_password(doc_info["password"]),
+                        full_name=doc_info["full_name"],
+                        role="therapist",
+                        specialization=doc_info["specialization"],
+                        license_number=doc_info["license_number"],
+                        clinic_hospital=doc_info["clinic_hospital"],
+                        experience_years=doc_info["experience_years"],
+                        phone_number=doc_info["phone_number"],
+                        is_active=True
+                    ))
+                else:
+                    doc.full_name = doc_info["full_name"]
+                    doc.role = "therapist"
+                    doc.specialization = doc_info["specialization"]
+                    doc.clinic_hospital = doc_info["clinic_hospital"]
+
+            admin_email = "admin@metrohealth.ai"
+            if not db.query(User).filter(User.email == admin_email).first():
                 db.add(User(
-                    email="dr.rajesh@metrohealth.ai",
-                    hashed_password=hash_password("Doctor2026!"),
-                    full_name="Dr. Rajesh Sharma, MS (Ortho)",
-                    role="therapist",
-                    specialization="Chief Orthopaedic & Sports Physical Rehabilitation Specialist",
-                    license_number="MCI-84729-D / DPT-9921",
+                    email=admin_email,
+                    hashed_password=hash_password("Admin2026!"),
+                    full_name="MetroHealth Hospital Administrator",
+                    role="admin",
+                    specialization="Hospital Operations & Patient EMR Administration",
                     clinic_hospital="MetroHealth Super Speciality Hospital, New Delhi",
-                    experience_years=14,
                     phone_number="+91 96537 66889",
                     is_active=True
                 ))
-            if not db.query(User).filter(User.email == "demo@healthsense.ai").first():
-                db.add(User(
-                    email="demo@healthsense.ai",
-                    hashed_password=hash_password("HealthSense2026!"),
-                    full_name="Aarav Sharma",
-                    age=28,
-                    gender="Male",
-                    phone_number="+91 96537 66889",
-                    role="patient",
-                    is_active=True
-                ))
+
+            # Remove legacy demo patient
+            demo_user = db.query(User).filter(User.email == "demo@healthsense.ai").first()
+            if demo_user:
+                db.delete(demo_user)
+
             db.commit()
         finally:
             db.close()

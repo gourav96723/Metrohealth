@@ -6,7 +6,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
-  login: (email: string, pass: string) => Promise<void>;
+  login: (email: string, pass: string) => Promise<User>;
   register: (data: {
     email: string;
     password: string;
@@ -53,11 +53,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     refreshUser();
   }, [token]);
 
-  const login = async (email: string, pass: string) => {
+  const login = async (email: string, pass: string): Promise<User> => {
     const res = await api.login(email, pass);
     localStorage.setItem('healthsense_token', res.access_token);
     setToken(res.access_token);
     setUser(res.user);
+    return res.user;
   };
 
   const register = async (data: any) => {

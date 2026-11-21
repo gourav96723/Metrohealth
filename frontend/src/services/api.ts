@@ -302,4 +302,26 @@ export const api = {
     });
     return handleResponse<any>(res);
   },
+
+  // --- ADMIN PORTAL ---
+  async getAdminStats(): Promise<any> {
+    const res = await fetch(`${BASE_URL}/admin/stats`, {
+      headers: getAuthHeader(),
+    });
+    return handleResponse<any>(res);
+  },
+
+  async getAdminPatients(): Promise<any[]> {
+    const res = await fetch(`${BASE_URL}/admin/patients`, {
+      headers: getAuthHeader(),
+    });
+    return handleResponse<any[]>(res);
+  },
+
+  async getAdminStaff(): Promise<any[]> {
+    const res = await fetch(`${BASE_URL}/admin/staff`, {
+      headers: getAuthHeader(),
+    });
+    return handleResponse<any[]>(res);
+  },
 };

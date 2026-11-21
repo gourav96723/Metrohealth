@@ -12,6 +12,7 @@ import { TherapistPatientsPage } from './pages/TherapistPatientsPage';
 import { TherapistBiomechanicsPage } from './pages/TherapistBiomechanicsPage';
 import { TherapistPrescriptionPage } from './pages/TherapistPrescriptionPage';
 import { TherapistSchedulePage } from './pages/TherapistSchedulePage';
+import { AdminDashboardPage } from './pages/AdminDashboardPage';
 
 // Pages
 import { LandingPage } from './pages/LandingPage';
@@ -51,6 +52,7 @@ const MainApp: React.FC = () => {
     'therapist-biomechanics',
     'therapist-prescriptions',
     'therapist-schedule',
+    'admin-dashboard',
   ];
 
   const portalPages = [
@@ -73,7 +75,9 @@ const MainApp: React.FC = () => {
   React.useEffect(() => {
     if (user) {
       if (currentPage === 'login' || currentPage === 'register' || currentPage === 'landing') {
-        if (user.role === 'therapist') {
+        if (user.role === 'admin') {
+          setCurrentPage('admin-dashboard');
+        } else if (user.role === 'therapist') {
           setCurrentPage('therapist-dashboard');
         } else {
           setCurrentPage('dashboard');
@@ -96,7 +100,9 @@ const MainApp: React.FC = () => {
     }
 
     if (user && ['login', 'register', 'landing'].includes(page)) {
-      if (user.role === 'therapist') {
+      if (user.role === 'admin') {
+        setCurrentPage('admin-dashboard');
+      } else if (user.role === 'therapist') {
         setCurrentPage('therapist-dashboard');
       } else {
         setCurrentPage('dashboard');
@@ -150,6 +156,11 @@ const MainApp: React.FC = () => {
 
             {currentPage === 'therapist-schedule' && (
               <TherapistSchedulePage onNavigate={handleNavigate} />
+            )}
+
+            {/* Hospital Administrator Management Portal */}
+            {currentPage === 'admin-dashboard' && (
+              <AdminDashboardPage onNavigate={handleNavigate} />
             )}
 
             {/* Patient Core Portal Pages */}

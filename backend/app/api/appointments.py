@@ -11,51 +11,40 @@ from ..schemas.appointment import AppointmentCreate, AppointmentResponse, Provid
 
 router = APIRouter(prefix="/appointments", tags=["Appointments (Demo / Configurable)"])
 
-# Configurable Indian healthcare specialists & clinics
+# Active MetroHealth Hospital Specialists (All same hospital)
 DEMO_PROVIDERS: list[ProviderInfo] = [
     ProviderInfo(
         id="prov-1",
-        name="Dr. Rajesh Sharma, MS (Ortho)",
+        name="Dr. Rajesh Kumar Sharma",
         specialty="Senior Orthopaedic & Sports Physiotherapy",
         clinic="MetroHealth Super Speciality Hospital, New Delhi",
-        rating=4.95,
+        rating=4.96,
         experience_years=16,
         available_days=["Monday", "Wednesday", "Friday"],
         time_slots=["09:30", "11:30", "14:30", "16:30"],
-        is_demo=True
+        is_demo=False
     ),
     ProviderInfo(
         id="prov-2",
-        name="Dr. Priya Nair, MPT (Neuro-Spine)",
+        name="Dr. Rashmi Sharma",
         specialty="Chief Spine Rehabilitation & Posture Specialist",
-        clinic="MetroHealth Spine & Vertebral Institute, Mumbai",
+        clinic="MetroHealth Super Speciality Hospital, New Delhi",
         rating=4.98,
         experience_years=14,
         available_days=["Tuesday", "Thursday", "Saturday"],
         time_slots=["10:00", "12:30", "15:00", "17:30"],
-        is_demo=True
+        is_demo=False
     ),
     ProviderInfo(
         id="prov-3",
-        name="Dr. Amitav Ghosh, MBBS, D.Ortho",
-        specialty="Consultant Ergonomics & Postural Health",
-        clinic="MetroHealth Occupational Health Center, Bengaluru",
-        rating=4.90,
-        experience_years=11,
-        available_days=["Monday", "Tuesday", "Thursday", "Friday"],
-        time_slots=["09:00", "11:00", "14:00"],
-        is_demo=True
-    ),
-    ProviderInfo(
-        id="prov-4",
-        name="Dr. Ananya Mukherjee, MPT, MIAP",
+        name="Dr. Ganpat Yadav",
         specialty="Consultant Joint Mobility & Musculoskeletal Rehab",
-        clinic="MetroHealth Advanced Pain & Physiotherapy Clinic, Jaipur",
+        clinic="MetroHealth Super Speciality Hospital, New Delhi",
         rating=4.92,
-        experience_years=10,
-        available_days=["Monday", "Wednesday", "Thursday", "Saturday"],
-        time_slots=["10:30", "12:00", "15:30", "17:00"],
-        is_demo=True
+        experience_years=12,
+        available_days=["Monday", "Tuesday", "Thursday", "Friday"],
+        time_slots=["09:00", "11:00", "14:00", "16:00"],
+        is_demo=False
     )
 ]
 

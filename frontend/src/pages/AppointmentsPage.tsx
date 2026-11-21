@@ -60,7 +60,11 @@ export const AppointmentsPage: React.FC<AppointmentsPageProps> = ({ onNavigate, 
 
       if (provData.length > 0) {
         if (params?.doctorName) {
-          const match = provData.find((p) => p.name.includes(params.doctorName.split(' ')[1]));
+          const match = provData.find((p) =>
+            p.name.toLowerCase().includes(params.doctorName.toLowerCase()) ||
+            params.doctorName.toLowerCase().includes(p.name.toLowerCase()) ||
+            (params.doctorName.split(' ')[1] && p.name.includes(params.doctorName.split(' ')[1]))
+          );
           setSelectedProvider(match || provData[0]);
         } else {
           setSelectedProvider(provData[0]);

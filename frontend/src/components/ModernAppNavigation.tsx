@@ -37,9 +37,16 @@ export const ModernAppNavigation: React.FC<ModernAppNavigationProps> = ({
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
+  const isAdmin = user?.role === 'admin';
   const isTherapist = user?.role === 'therapist';
 
   // Navigation Items according to active role
+  const adminNavItems = [
+    { id: 'admin-dashboard', label: 'Overview', icon: LayoutDashboard },
+    { id: 'admin-dashboard', label: 'All Patients', icon: Users },
+    { id: 'admin-dashboard', label: 'Medical Staff', icon: Stethoscope },
+  ];
+
   const doctorNavItems = [
     { id: 'therapist-dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'therapist-patients', label: 'Patients', icon: Users },
@@ -56,7 +63,7 @@ export const ModernAppNavigation: React.FC<ModernAppNavigationProps> = ({
     { id: 'appointments', label: 'Schedule', icon: Calendar },
   ];
 
-  const navItems = isTherapist ? doctorNavItems : patientNavItems;
+  const navItems = isAdmin ? adminNavItems : isTherapist ? doctorNavItems : patientNavItems;
 
   return (
     <>
@@ -65,7 +72,7 @@ export const ModernAppNavigation: React.FC<ModernAppNavigationProps> = ({
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 sm:gap-6">
           {/* Left: Brand Logo (Exact match with reference) */}
           <div
-            onClick={() => onNavigate(isTherapist ? 'therapist-dashboard' : 'dashboard')}
+            onClick={() => onNavigate(isAdmin ? 'admin-dashboard' : isTherapist ? 'therapist-dashboard' : 'dashboard')}
             className="flex items-center gap-2.5 cursor-pointer flex-shrink-0 group"
           >
             <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-teal-500/30 to-cyan-400/20 border border-teal-400/40 flex items-center justify-center text-teal-300 shadow-[0_0_12px_rgba(45,212,191,0.25)] group-hover:scale-105 transition">

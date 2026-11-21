@@ -51,12 +51,15 @@ npm run dev
 
 ---
 
-## 👤 Test Accounts
+## 👤 Active Hospital Accounts
 
-| Role | Email / Identifier | Password |
-|---|---|---|
-| **Doctor / Therapist** | `dr.rajesh@metrohealth.ai` | `Doctor2026!` |
-| **Patient** | `demo@healthsense.ai` | `HealthSense2026!` |
+| Role | Name | Email / Identifier | Password | Hospital |
+|---|---|---|---|---|
+| **Doctor / Specialist** | Dr. Rajesh Kumar Sharma | `dr.rajesh@metrohealth.ai` | `Doctor2026!` | MetroHealth Hospital, New Delhi |
+| **Doctor / Specialist** | Dr. Rashmi Sharma | `dr.rashmi@metrohealth.ai` | `Doctor2026!` | MetroHealth Hospital, New Delhi |
+| **Doctor / Specialist** | Dr. Ganpat Yadav | `dr.ganpat@metrohealth.ai` | `Doctor2026!` | MetroHealth Hospital, New Delhi |
+| **Hospital Administrator** | Admin Operations Hub | `admin@metrohealth.ai` | `Admin2026!` | MetroHealth Hospital, New Delhi |
+| **Patient** | Register Any New Patient | *Via Register Tab* | *Your Password* | MetroHealth Portal |
 
 ---
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Calendar,
   Clock,
@@ -16,6 +16,7 @@ import {
   Stethoscope,
   Activity
 } from 'lucide-react';
+import { api } from '../services/api';
 
 interface ConsultationSlot {
   id: string;
@@ -24,87 +25,48 @@ interface ConsultationSlot {
   gender: string;
   phone: string;
   timeSlot: string;
-  type: 'Telehealth Video Consult' | 'In-Clinic Biomechanical Exam' | 'Post-Op Follow-up';
+  type: string;
   chiefComplaint: string;
   status: 'waiting' | 'in_consultation' | 'confirmed' | 'completed';
   roomUrl?: string;
 }
 
-const INITIAL_SCHEDULE: ConsultationSlot[] = [
-  {
-    id: 'C-01',
-    patientName: 'Aarav Sharma',
-    age: 28,
-    gender: 'Male',
-    phone: '+91 96537 66889',
-    timeSlot: '09:30 AM',
-    type: 'Telehealth Video Consult',
-    chiefComplaint: 'Cervical Spine Stiffness & Ergonomic Review',
-    status: 'completed',
-  },
-  {
-    id: 'C-02',
-    patientName: 'Neha Gupta',
-    age: 34,
-    gender: 'Female',
-    phone: '+91 98112 34567',
-    timeSlot: '10:00 AM',
-    type: 'In-Clinic Biomechanical Exam',
-    chiefComplaint: 'Acute Lumbar-Pelvic Asymmetry (L4-L5 Strain)',
-    status: 'in_consultation',
-  },
-  {
-    id: 'C-03',
-    patientName: 'Vikram Malhotra',
-    age: 45,
-    gender: 'Male',
-    phone: '+91 99201 88341',
-    timeSlot: '10:30 AM',
-    type: 'In-Clinic Biomechanical Exam',
-    chiefComplaint: 'Patellofemoral Knee Tracking & Extension Deficit',
-    status: 'waiting',
-  },
-  {
-    id: 'C-04',
-    patientName: 'Priya Patel',
-    age: 29,
-    gender: 'Female',
-    phone: '+91 97234 11098',
-    timeSlot: '11:00 AM',
-    type: 'Telehealth Video Consult',
-    chiefComplaint: 'Thoracic Kyphosis & Scapular Dyskinesis',
-    status: 'confirmed',
-  },
-  {
-    id: 'C-05',
-    patientName: 'Rohan Verma',
-    age: 52,
-    gender: 'Male',
-    phone: '+91 98450 77213',
-    timeSlot: '11:30 AM',
-    type: 'Telehealth Video Consult',
-    chiefComplaint: 'Right Rotator Cuff Impingement & Night Pain',
-    status: 'confirmed',
-  },
-  {
-    id: 'C-06',
-    patientName: 'Ananya Mukherjee',
-    age: 31,
-    gender: 'Female',
-    phone: '+91 98300 45678',
-    timeSlot: '12:00 PM',
-    type: 'Post-Op Follow-up',
-    chiefComplaint: 'Bilateral Ankle Pronation & Achilles Tendon Protocol',
-    status: 'confirmed',
-  },
-];
-
 export const TherapistSchedulePage: React.FC<{ onNavigate: (page: string, params?: any) => void }> = ({ onNavigate }) => {
-  const [schedule, setSchedule] = useState<ConsultationSlot[]>(INITIAL_SCHEDULE);
+  const [schedule, setSchedule] = useState<ConsultationSlot[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeVideoCall, setActiveVideoCall] = useState<ConsultationSlot | null>(null);
   const [micMuted, setMicMuted] = useState(false);
   const [camOff, setCamOff] = useState(false);
   const [liveConsultNotes, setLiveConsultNotes] = useState('');
+
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      try {
+        const queue = await api.getTherapistQueue();
+        if (queue && queue.length > 0) {
+          const mapped: ConsultationSlot[] = queue.map((q: any) => ({
+            id: String(q.id || q.token),
+            patientName: q.patient_name,
+            age: q.age || 28,
+            gender: q.gender || 'Not Specified',
+            phone: q.phone || '+91 96537 66889',
+            timeSlot: q.time_slot || '10:00 AM',
+            type: q.consultation_type || 'Telehealth Video Consult',
+            chiefComplaint: q.chief_complaint || 'Postural Review',
+            status: q.status === 'in_consultation' ? 'in_consultation' : q.status === 'completed' ? 'completed' : 'waiting'
+          }));
+          setSchedule(mapped);
+        } else {
+          setSchedule([]);
+        }
+      } catch (err) {
+        setSchedule([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSchedule();
+  }, []);
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
@@ -127,8 +89,19 @@ export const TherapistSchedulePage: React.FC<{ onNavigate: (page: string, params
         </button>
       </div>
 
-      {/* Consultations List */}
-      <div className="space-y-3.5">
+      {/* Consultations List or Empty State */}
+      {schedule.length === 0 ? (
+        <div className="py-20 p-8 rounded-[18px] bg-[#0c1f35]/75 border border-teal-500/20 backdrop-blur-xl flex flex-col items-center justify-center text-center space-y-3">
+          <div className="w-14 h-14 rounded-2xl bg-teal-500/10 border border-teal-500/25 flex items-center justify-center text-teal-400 shadow-[0_0_20px_rgba(45,212,191,0.15)]">
+            <Calendar className="w-7 h-7" />
+          </div>
+          <h3 className="text-base font-bold text-white">No Consultations Scheduled Today</h3>
+          <p className="text-xs text-slate-400 max-w-md">
+            New video appointments and in-clinic OPD consultations booked with you will appear on your live schedule in real time.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3.5">
         {schedule.map((slot) => {
           const isTelehealth = slot.type.includes('Telehealth');
           return (
@@ -225,6 +198,7 @@ export const TherapistSchedulePage: React.FC<{ onNavigate: (page: string, params
           );
         })}
       </div>
+      )}
 
       {/* ================= TELEHEALTH VIDEO CONSULT MODAL ================= */}
       {activeVideoCall && (
